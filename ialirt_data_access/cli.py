@@ -2,12 +2,8 @@
 
 """Command line interface to query the IALIRT log API.
 
-This module allows querying the IALIRT log API using command-line arguments.
-
 Usage:
-    ialirt-log-query --year <year> --doy <doy> --instance <instance>
-    (venv) MacL4581:ialirt-data-access lasa6858$ python3 ialirt_data_access/cli.py --url https://ialirt.dev.imap-mission.com ialirt-log-query --year 2024 --doy 045 --instance 1
-{'files': ['flight_iois_1.log.2024-045T16-54-46_123456.txt']}
+    ialirt_data_access --debug --url <url> ialirt-log-query --year <year> --doy <doy> --instance <instance>
 """
 
 import argparse
@@ -17,17 +13,21 @@ import ialirt_data_access
 
 
 def _query_parser(args: argparse.Namespace):
-    """Query the IALIRT log API."""
-    # Use the provided URL or the default
-    valid_args = [
-        "year",
-        "doy",
-        "instance",
-    ]
+    """Query the IALIRT log API.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed arguments including year, doy, and instance.
+
+    Returns
+    -------
+    None
+    """
     query_params = {
-        key: value
-        for key, value in vars(args).items()
-        if key in valid_args and value is not None
+        "year": args.year,
+        "doy": args.doy,
+        "instance": args.instance,
     }
     try:
         query_results = ialirt_data_access.query(**query_params)
@@ -49,6 +49,11 @@ def main():
     )
 
     parser = argparse.ArgumentParser(prog="ialirt-data-access")
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {ialirt_data_access.__version__}",
+    )
     parser.add_argument("--url", type=str, required=False, help=url_help)
     # Logging level
     parser.add_argument(
@@ -73,24 +78,18 @@ def main():
     query_parser = subparsers.add_parser("ialirt-log-query")
 
     query_parser.add_argument(
-        "--year",
-        type=str,
-        required=True,
-        help="Year",
+        "--year", type=str, required=True, help="Year of the logs (e.g., 2024)."
     )
 
     query_parser.add_argument(
-        "--doy",
-        type=str,
-        required=True,
-        help="Day of Year",
+        "--doy", type=str, required=True, help="Day of year of the logs (e.g., 045)."
     )
 
     query_parser.add_argument(
         "--instance",
         type=str,
         required=True,
-        help="Instance",
+        help="Instance number (e.g., 1).",
         choices=[
             "1",
             "2",
