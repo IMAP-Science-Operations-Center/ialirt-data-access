@@ -103,11 +103,9 @@ def main():
     logging.basicConfig(level=args.loglevel)
 
     if args.url:
-        # We got an explicit url from the command line
+        # Explicit url from the command line
         ialirt_data_access.config["DATA_ACCESS_URL"] = args.url
 
-    # Now process through the respective function for the invoked command
-    # (set with set_defaults on the subparsers above)
     args.func(args)
 
 
