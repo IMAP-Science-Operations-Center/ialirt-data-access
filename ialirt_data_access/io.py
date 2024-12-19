@@ -15,6 +15,7 @@ class IALIRTDataAccessError(Exception):
 
     pass
 
+
 @contextlib.contextmanager
 def _get_url_response(request: urllib.request.Request):
     """Get the response from a URL request.
@@ -39,12 +40,35 @@ def _get_url_response(request: urllib.request.Request):
         raise IALIRTDataAccessError(message) from e
 
 
+def _validate_query_params(year: str, doy: str, instance: str):
+    """
+    Validate the query parameters for the IALIRT log API.
+
+    Parameters
+    ----------
+    year : str
+        Year, must be a 4-digit string (e.g., '2024').
+    doy : str
+        Day of year, must be a string between '001' and '365'.
+    instance : str
+        Instance number, must be either '1' or '2'.
+
+    Raises
+    ------
+    ValueError
+        If any parameter is invalid.
+    """
+    if not (year.isdigit() and len(year) == 4):
+        raise ValueError("Year must be a 4-digit string (e.g., '2024').")
+    if not (doy.isdigit() and 1 <= int(doy) <= 365):
+        raise ValueError("DOY must be a string between '001' and '365'.")
+    if instance not in {"1", "2"}:
+        raise ValueError("Instance must be '1' or '2'.")
+
+
 def query(
-        *,
-        year: str,
-        doy: str,
-        instance: str,
-):
+    *, year: str, doy: str, instance: str
+) -> list[str]:
     """Query the logs.
 
     Parameters
@@ -66,11 +90,12 @@ def query(
         "doy": doy,
         "instance": instance,
     }
+    _validate_query_params(**query_params)
 
     url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
     url += f"/ialirt-log-query?{urlencode(query_params)}"
 
-    logger.info("Querying data archive for %s with url %s", query_params, url)
+    logger.info("Querying for %s with url %s", query_params, url)
     request = urllib.request.Request(url, method="GET")
     with _get_url_response(request) as response:
         # Retrieve the response as a list of files
