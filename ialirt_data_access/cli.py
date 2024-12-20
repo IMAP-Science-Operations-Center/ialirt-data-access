@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-"""Command line interface to query the IALIRT log API.
+"""Command line interface to query IALIRT logs in the s3 bucket.
 
 Usage:
-    ialirt_data_access --debug --url <url> ialirt-log-query --year <year> --doy <doy> --instance <instance>
+    ialirt_data_access --debug --url <url> ialirt-log-query
+    --year <year> --doy <doy> --instance <instance>
 """
 
 import argparse

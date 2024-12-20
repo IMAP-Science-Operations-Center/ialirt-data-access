@@ -1,4 +1,4 @@
-"""Global pytest configuration for the package."""
+"""Global pytest configuration for package."""
 
 import pytest
 

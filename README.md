@@ -1,6 +1,6 @@
 # I-ALiRT Data Access Package
 
-This lightweight  Python package allows users to query log data.
+This lightweight Python package allows users to query log data.
 
 ## Command Line Utility
 

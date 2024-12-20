@@ -1,7 +1,7 @@
 """Data Access for I-ALiRT.
 
-This package contains the data access tools for the I-ALiRT logs. It
-provides a convenient way to query and download log files.
+This package contains the data access tools for the I-ALiRT logs.
+Provides a convenient way to query and download log files.
 """
 
 import os

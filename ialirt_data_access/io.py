@@ -1,3 +1,5 @@
+"""The ``io`` module."""
+
 import contextlib
 import json
 import logging
@@ -41,8 +43,7 @@ def _get_url_response(request: urllib.request.Request):
 
 
 def _validate_query_params(year: str, doy: str, instance: str):
-    """
-    Validate the query parameters for the IALIRT log API.
+    """Validate the query parameters for the IALIRT log API.
 
     Parameters
     ----------
@@ -66,9 +67,7 @@ def _validate_query_params(year: str, doy: str, instance: str):
         raise ValueError("Instance must be '1' or '2'.")
 
 
-def query(
-    *, year: str, doy: str, instance: str
-) -> list[str]:
+def query(*, year: str, doy: str, instance: str) -> list[str]:
     """Query the logs.
 
     Parameters

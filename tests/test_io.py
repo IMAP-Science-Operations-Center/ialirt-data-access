@@ -1,8 +1,7 @@
 """Tests for the ``io`` module."""
 
 from __future__ import annotations
-# eeee
-d
+
 import json
 import unittest
 from io import BytesIO
@@ -52,8 +51,7 @@ def test_query(mock_urlopen: unittest.mock.MagicMock):
     """Test a basic call to the Query API."""
     filename = "flight_iois_1.log.2024-045T16-54-46_123456.txt"
     query_params = {"year": "2024", "doy": "045", "instance": "1"}
-    _set_mock_data(mock_urlopen,
-                   json.dumps([filename]).encode("utf-8"))
+    _set_mock_data(mock_urlopen, json.dumps([filename]).encode("utf-8"))
     response = ialirt_data_access.query(**query_params)
     assert response == ["flight_iois_1.log.2024-045T16-54-46_123456.txt"]
 
@@ -62,13 +60,17 @@ def test_query(mock_urlopen: unittest.mock.MagicMock):
     # Assert that the correct URL was used for the query
     urlopen_call = mock_urlopen.mock_calls[0].args[0]
     called_url = urlopen_call.full_url
-    expected_url_encoded = f"https://alirt.test.com/ialirt-log-query?{urlencode(query_params)}"
+    expected_url_encoded = (
+        f"https://alirt.test.com/ialirt-log-query?{urlencode(query_params)}"
+    )
     assert called_url == expected_url_encoded
 
 
 def test_query_bad_params(mock_urlopen: unittest.mock.MagicMock):
     """Test a call to the Query API that has invalid parameters."""
-    with pytest.raises(TypeError, match="got an unexpected keyword argument 'bad_param'"):
+    with pytest.raises(
+        TypeError, match="got an unexpected keyword argument 'bad_param'"
+    ):
         ialirt_data_access.query(bad_param="test")
 
     assert mock_urlopen.call_count == 0
