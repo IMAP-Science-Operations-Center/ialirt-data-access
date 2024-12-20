@@ -12,6 +12,9 @@ import logging
 
 import ialirt_data_access
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
 
 def _query_parser(args: argparse.Namespace):
     """Query the IALIRT log API.
@@ -32,8 +35,10 @@ def _query_parser(args: argparse.Namespace):
     }
     try:
         query_results = ialirt_data_access.query(**query_params)
+        logger.info("Query results: %s", query_results)
         print(query_results)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
+        logger.error("An error occurred: %s", e)
         print(e)
         return
 
@@ -58,6 +63,7 @@ def main():
     parser.add_argument("--url", type=str, required=False, help=url_help)
     # Logging level
     parser.add_argument(
+        "--vv",
         "--debug",
         help="Print lots of debugging statements",
         action="store_const",

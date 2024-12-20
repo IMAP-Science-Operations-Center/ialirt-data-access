@@ -61,7 +61,7 @@ def _validate_query_params(year: str, doy: str, instance: str):
     """
     if not (year.isdigit() and len(year) == 4):
         raise ValueError("Year must be a 4-digit string (e.g., '2024').")
-    if not (doy.isdigit() and 1 <= int(doy) <= 365):
+    if not (doy.isdigit() and 1 <= int(doy) <= 366):
         raise ValueError("DOY must be a string between '001' and '365'.")
     if instance not in {"1", "2"}:
         raise ValueError("Instance must be '1' or '2'.")
