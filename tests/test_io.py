@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import unittest
 from io import BytesIO
+from pathlib import Path
 from unittest.mock import patch
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -61,7 +62,7 @@ def test_query(mock_urlopen: unittest.mock.MagicMock):
     urlopen_call = mock_urlopen.mock_calls[0].args[0]
     called_url = urlopen_call.full_url
     expected_url_encoded = (
-        f"https://alirt.test.com/ialirt-log-query?{urlencode(query_params)}"
+        f"https://ialirt.test.com/ialirt-log-query?{urlencode(query_params)}"
     )
     assert called_url == expected_url_encoded
 
@@ -73,4 +74,45 @@ def test_query_bad_params(mock_urlopen: unittest.mock.MagicMock):
     ):
         ialirt_data_access.query(bad_param="test")
 
+    assert mock_urlopen.call_count == 0
+
+
+def test_download(mock_urlopen: unittest.mock.MagicMock, tmp_path: Path):
+    """Test the download function."""
+    filename = "flight_iois_1.log.2024-045T16-54-46_123456.txt"
+    downloaded_file = ialirt_data_access.download(filename, downloads_dir=tmp_path)
+
+    # Assert that the file was created
+    assert downloaded_file.exists()
+
+    # Verify the file was saved to the correct location
+    expected_path = tmp_path / filename
+    assert downloaded_file == expected_path
+
+    # Verify that the file contains the expected content
+    with open(downloaded_file, "rb") as f:
+        assert f.read() == b"Mock file content"
+
+    # Check that urlopen was called with the correct URL
+    mock_urlopen.assert_called_once()
+    urlopen_call = mock_urlopen.mock_calls[0].args[0]
+    called_url = urlopen_call.full_url
+    expected_url = f"https://ialirt.test.com/ialirt-log-download/logs/{filename}"
+    assert called_url == expected_url
+    assert urlopen_call.method == "GET"
+
+
+def test_download_already_exists(mock_urlopen: unittest.mock.MagicMock, tmp_path: Path):
+    """Test that downloading a file that already exists does not make any requests."""
+    filename = "flight_iois_1.log.2024-045T16-54-46_123456.txt"
+
+    # Set up the destination and create the file
+    downloads_dir = tmp_path / "Downloads"
+    destination = downloads_dir / filename
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.touch(exist_ok=True)
+
+    result = ialirt_data_access.download(filename, downloads_dir=downloads_dir)
+    assert result == destination
+    # Assert no HTTP request was made
     assert mock_urlopen.call_count == 0

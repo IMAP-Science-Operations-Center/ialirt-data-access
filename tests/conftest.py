@@ -9,5 +9,5 @@ import ialirt_data_access
 def _set_global_config(monkeypatch: pytest.fixture):
     """Set the test url."""
     monkeypatch.setitem(
-        ialirt_data_access.config, "DATA_ACCESS_URL", "https://alirt.test.com"
+        ialirt_data_access.config, "DATA_ACCESS_URL", "https://ialirt.test.com"
     )
