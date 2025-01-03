@@ -16,6 +16,21 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
+def _download_parser(args: argparse.Namespace):
+    """Download an IALIRT log.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        An object containing the parsed arguments and their values
+    """
+    try:
+        output_path = ialirt_data_access.download(args.file_path)
+        print(f"Successfully downloaded the file to: {output_path}")
+    except ialirt_data_access.io.IALIRTDataAccessError as e:
+        print(e)
+
+
 def _query_parser(args: argparse.Namespace):
     """Query the IALIRT log API.
 
@@ -104,6 +119,15 @@ def main():
     )
 
     query_parser.set_defaults(func=_query_parser)
+
+    # Download command
+    download_parser = subparsers.add_parser("ialirt-log-download")
+    download_parser.add_argument(
+        "--filename",
+        type=str,
+        required=True,
+        help="Example: TODO",
+    )
 
     # Parse the arguments and set the values
     args = parser.parse_args()

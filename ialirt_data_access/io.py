@@ -4,6 +4,7 @@ import contextlib
 import json
 import logging
 import urllib.request
+from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 
@@ -104,3 +105,33 @@ def query(*, year: str, doy: str, instance: str) -> list[str]:
         items = json.loads(items)
         logger.debug("Decoded JSON: %s", items)
     return items
+
+
+def download(*, filename: str) -> Path:
+    """Download the logs.
+
+    Parameters
+    ----------
+    filename : str
+        Filename
+
+    Returns
+    -------
+    destination: pathlib.Path
+        Path to the downloaded file
+    """
+    url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
+    url += f"/ialirt-log-download/logs/{filename}"
+
+    downloads_dir = Path.home() / "Downloads"
+    downloads_dir.mkdir(parents=True, exist_ok=True)
+    destination = downloads_dir / filename
+
+    logger.info("Downloading %s with url %s", filename, url)
+    request = urllib.request.Request(url, method="GET")
+    with _get_url_response(request) as response:
+        logger.debug("Received response: %s", response)
+        with open(destination, "wb") as local_file:
+            local_file.write(response.read())
+
+    return destination
