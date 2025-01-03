@@ -19,6 +19,15 @@ Find all files from a given year, day of year, and instance
 $ ialirt_data_access --url <url> ialirt-log-query --year <year> --doy <doy> --instance <instance>
 ```
 
+### Download logs
+
+Download a log and place in Downloads directory or optionally specify another local directory by appending --downloads_dir <directory> to the command
+
+```bash
+$ ialirt_data_access --url <url> ialirt-log-download ----filename <filename>
+
+```
+
 ## Importing as a package
 
 ```python

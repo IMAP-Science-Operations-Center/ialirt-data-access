@@ -9,6 +9,7 @@ Usage:
 
 import argparse
 import logging
+from pathlib import Path
 
 import ialirt_data_access
 
@@ -25,7 +26,7 @@ def _download_parser(args: argparse.Namespace):
         An object containing the parsed arguments and their values
     """
     try:
-        ialirt_data_access.download(args.filename)
+        ialirt_data_access.download(args.filename, args.downloads_dir)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         print(e)
 
@@ -122,6 +123,12 @@ def main():
         "--filename",
         type=str,
         required=True,
+        help="Example: TODO",
+    )
+    download_parser.add_argument(
+        "--downloads_dir",
+        type=Path,
+        required=False,
         help="Example: TODO",
     )
     download_parser.set_defaults(func=_download_parser)
