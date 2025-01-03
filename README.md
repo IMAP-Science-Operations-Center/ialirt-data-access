@@ -44,7 +44,7 @@ results = ialirt_data_access.query(year="2024", doy="045", instance="1")
 To change the default URL that the package accesses, you can set
 the environment variable ``IALIRT_DATA_ACCESS_URL`` or within the
 package ``ialirt_data_access.config["DATA_ACCESS_URL"]``. The default
-is the development server ``https://alirt.dev.imap-mission.com``.
+is the development server ``https://ialirt.dev.imap-mission.com``.
 
 ## Troubleshooting
 
