@@ -25,8 +25,7 @@ def _download_parser(args: argparse.Namespace):
         An object containing the parsed arguments and their values
     """
     try:
-        output_path = ialirt_data_access.download(args.filename)
-        print(f"Successfully downloaded the file to: {output_path}")
+        ialirt_data_access.download(args.filename)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         print(e)
 

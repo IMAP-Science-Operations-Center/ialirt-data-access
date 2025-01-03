@@ -142,5 +142,6 @@ def download(filename: str, downloads_dir: Optional[Path] = None) -> Path:
         logger.debug("Received response: %s", response)
         with open(destination, "wb") as local_file:
             local_file.write(response.read())
+            print(f"Successfully downloaded the file to: {destination}")
 
     return destination
