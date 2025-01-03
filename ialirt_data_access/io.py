@@ -107,7 +107,7 @@ def query(*, year: str, doy: str, instance: str) -> list[str]:
     return items
 
 
-def download(*, filename: str) -> Path:
+def download(filename: str) -> Path:
     """Download the logs.
 
     Parameters

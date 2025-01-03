@@ -25,7 +25,7 @@ def _download_parser(args: argparse.Namespace):
         An object containing the parsed arguments and their values
     """
     try:
-        output_path = ialirt_data_access.download(args.file_path)
+        output_path = ialirt_data_access.download(args.filename)
         print(f"Successfully downloaded the file to: {output_path}")
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         print(e)
@@ -95,18 +95,16 @@ def main():
         const=logging.INFO,
     )
 
-    # Query command
     subparsers = parser.add_subparsers(required=True)
-    query_parser = subparsers.add_parser("ialirt-log-query")
 
+    # Query command
+    query_parser = subparsers.add_parser("ialirt-log-query")
     query_parser.add_argument(
         "--year", type=str, required=True, help="Year of the logs (e.g., 2024)."
     )
-
     query_parser.add_argument(
         "--doy", type=str, required=True, help="Day of year of the logs (e.g., 045)."
     )
-
     query_parser.add_argument(
         "--instance",
         type=str,
@@ -117,7 +115,6 @@ def main():
             "2",
         ],
     )
-
     query_parser.set_defaults(func=_query_parser)
 
     # Download command
@@ -128,6 +125,7 @@ def main():
         required=True,
         help="Example: TODO",
     )
+    download_parser.set_defaults(func=_download_parser)
 
     # Parse the arguments and set the values
     args = parser.parse_args()
