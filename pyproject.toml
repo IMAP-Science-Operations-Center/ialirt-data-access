@@ -1,9 +1,9 @@
 [build-system]
-requires = ["poetry-core>=1.0.0"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "ialirt_data_access"
+name = "ialirt-data-access"
 version = "0.1.0"
 description = "I-ALiRT Data Access"
 authors = ["IMAP SDC Developers <imap-sdc@lists.lasp.colorado.edu>"]
@@ -27,10 +27,10 @@ classifiers = [
     "Operating System :: MacOS",
 ]
 
-[tool.poetry.scripts]
+[project.scripts]
 ialirt-data-access = "ialirt_data_access.cli:main"
 
-[tool.poetry.urls]
+[project.urls]
 homepage = "https://github.com/IMAP-Science-Operations-Center"
 repository = "https://github.com/IMAP-Science-Operations-Center/ialirt-data-access"
 
