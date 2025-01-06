@@ -1,6 +1,6 @@
 # I-ALiRT Data Access Package
 
-This lightweight Python package allows users to query log data.
+This lightweight Python package allows users to query and download log data.
 
 ## Command Line Utility
 
@@ -19,6 +19,14 @@ Find all files from a given year, day of year, and instance
 $ ialirt_data_access --url <url> ialirt-log-query --year <year> --doy <doy> --instance <instance>
 ```
 
+### Download logs
+
+Download a log and place in Downloads directory or optionally specify another local directory by appending --downloads_dir <directory> to the command
+
+```bash
+$ ialirt_data_access --url <url> ialirt-log-download ----filename <filename>
+```
+
 ## Importing as a package
 
 ```python
@@ -35,7 +43,7 @@ results = ialirt_data_access.query(year="2024", doy="045", instance="1")
 To change the default URL that the package accesses, you can set
 the environment variable ``IALIRT_DATA_ACCESS_URL`` or within the
 package ``ialirt_data_access.config["DATA_ACCESS_URL"]``. The default
-is the development server ``https://alirt.dev.imap-mission.com``.
+is the development server ``https://ialirt.dev.imap-mission.com``.
 
 ## Troubleshooting
 

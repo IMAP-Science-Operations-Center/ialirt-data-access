@@ -6,17 +6,18 @@ Provides a convenient way to query and download log files.
 
 import os
 
-from ialirt_data_access.io import query
+from ialirt_data_access.io import download, query
 
 __all__ = [
     "query",
+    "download",
 ]
 __version__ = "0.1.0"
 
 
 config = {
     "DATA_ACCESS_URL": os.getenv("IALIRT_DATA_ACCESS_URL")
-    or "https://alirt.dev.imap-mission.com",
+    or "https://ialirt.dev.imap-mission.com",
 }
 """Settings configuration dictionary.
 

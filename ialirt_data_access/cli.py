@@ -9,6 +9,7 @@ Usage:
 
 import argparse
 import logging
+from pathlib import Path
 
 import ialirt_data_access
 
@@ -16,8 +17,22 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
+def _download_parser(args: argparse.Namespace):
+    """Download an I-ALiRT log.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        An object containing the parsed arguments and their values
+    """
+    try:
+        ialirt_data_access.download(args.filename, args.downloads_dir)
+    except ialirt_data_access.io.IALIRTDataAccessError as e:
+        print(e)
+
+
 def _query_parser(args: argparse.Namespace):
-    """Query the IALIRT log API.
+    """Query the I-ALiRT log API.
 
     Parameters
     ----------
@@ -46,7 +61,7 @@ def _query_parser(args: argparse.Namespace):
 def main():
     """Parse the command line arguments.
 
-    Run the command line interface to the IALIRT Data Access API.
+    Run the command line interface to the I-ALiRT Data Access API.
     """
     url_help = (
         "URL of the IALIRT API. "
@@ -80,18 +95,16 @@ def main():
         const=logging.INFO,
     )
 
-    # Query command
     subparsers = parser.add_subparsers(required=True)
-    query_parser = subparsers.add_parser("ialirt-log-query")
 
+    # Query command
+    query_parser = subparsers.add_parser("ialirt-log-query")
     query_parser.add_argument(
         "--year", type=str, required=True, help="Year of the logs (e.g., 2024)."
     )
-
     query_parser.add_argument(
         "--doy", type=str, required=True, help="Day of year of the logs (e.g., 045)."
     )
-
     query_parser.add_argument(
         "--instance",
         type=str,
@@ -102,8 +115,23 @@ def main():
             "2",
         ],
     )
-
     query_parser.set_defaults(func=_query_parser)
+
+    # Download command
+    download_parser = subparsers.add_parser("ialirt-log-download")
+    download_parser.add_argument(
+        "--filename",
+        type=str,
+        required=True,
+        help="Example: flight_iois.log.YYYY-DOYTHH:MM:SS.ssssss",
+    )
+    download_parser.add_argument(
+        "--downloads_dir",
+        type=Path,
+        required=False,
+        help="Example: flight_iois.log.YYYY-DOYTHH:MM:SS.ssssss",
+    )
+    download_parser.set_defaults(func=_download_parser)
 
     # Parse the arguments and set the values
     args = parser.parse_args()
