@@ -18,7 +18,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 def _download_parser(args: argparse.Namespace):
-    """Download an IALIRT log.
+    """Download an I-ALiRT log.
 
     Parameters
     ----------
@@ -32,7 +32,7 @@ def _download_parser(args: argparse.Namespace):
 
 
 def _query_parser(args: argparse.Namespace):
-    """Query the IALIRT log API.
+    """Query the I-ALiRT log API.
 
     Parameters
     ----------
@@ -61,7 +61,7 @@ def _query_parser(args: argparse.Namespace):
 def main():
     """Parse the command line arguments.
 
-    Run the command line interface to the IALIRT Data Access API.
+    Run the command line interface to the I-ALiRT Data Access API.
     """
     url_help = (
         "URL of the IALIRT API. "
@@ -123,13 +123,13 @@ def main():
         "--filename",
         type=str,
         required=True,
-        help="Example: TODO",
+        help="Example: flight_iois.log.YYYY-DOYTHH:MM:SS.ssssss",
     )
     download_parser.add_argument(
         "--downloads_dir",
         type=Path,
         required=False,
-        help="Example: TODO",
+        help="Example: flight_iois.log.YYYY-DOYTHH:MM:SS.ssssss",
     )
     download_parser.set_defaults(func=_download_parser)
 

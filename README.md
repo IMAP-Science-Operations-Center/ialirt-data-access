@@ -25,7 +25,6 @@ Download a log and place in Downloads directory or optionally specify another lo
 
 ```bash
 $ ialirt_data_access --url <url> ialirt-log-download ----filename <filename>
-
 ```
 
 ## Importing as a package
