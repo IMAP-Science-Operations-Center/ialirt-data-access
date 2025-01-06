@@ -3,7 +3,7 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "ialirt-data-access"
+name = "ialirt_data_access"
 version = "0.1.0"
 description = "I-ALiRT Data Access"
 authors = ["IMAP SDC Developers <imap-sdc@lists.lasp.colorado.edu>"]
@@ -27,7 +27,7 @@ classifiers = [
     "Operating System :: MacOS",
 ]
 
-[tool.poetry.scripts]
+[project.scripts]
 ialirt-data-access = "ialirt_data_access.cli:main"
 
 [project.urls]
