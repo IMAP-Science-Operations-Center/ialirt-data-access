@@ -27,12 +27,12 @@ classifiers = [
     "Operating System :: MacOS",
 ]
 
-[project.scripts]
+[tool.poetry.scripts]
 ialirt-data-access = "ialirt_data_access.cli:main"
 
-[project.urls]
-homepage = "https://github.com/IMAP-Science-Operations-Center"
-repository = "https://github.com/IMAP-Science-Operations-Center/ialirt-data-access"
+#[project.urls]
+#homepage = "https://github.com/IMAP-Science-Operations-Center"
+#repository = "https://github.com/IMAP-Science-Operations-Center/ialirt-data-access"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4"
