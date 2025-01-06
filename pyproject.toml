@@ -32,7 +32,6 @@ ialirt-data-access = "ialirt_data_access.cli:main"
 
 [tool.poetry.urls]
 homepage = "https://github.com/IMAP-Science-Operations-Center"
-repository = "https://github.com/IMAP-Science-Operations-Center/ialirt-data-access"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4"
