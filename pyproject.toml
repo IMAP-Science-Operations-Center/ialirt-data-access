@@ -30,7 +30,7 @@ classifiers = [
 [tool.poetry.scripts]
 ialirt-data-access = "ialirt_data_access.cli:main"
 
-[tool.poetry.urls]
+[project.urls]
 homepage = "https://github.com/IMAP-Science-Operations-Center"
 repository = "https://github.com/IMAP-Science-Operations-Center/ialirt-data-access"
 
