@@ -31,6 +31,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: Gr1N/setup-poetry@v9
+        with:
+          poetry-version: "1.8.0"
 
 
       - name: Install the application
