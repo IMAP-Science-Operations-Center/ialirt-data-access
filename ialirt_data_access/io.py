@@ -199,7 +199,7 @@ def algorithm_query(
         query_params["product_name"] = product_name
 
     url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
-    url += f"/ialirt-db-query/query/{urlencode(query_params)}"
+    url += f"/ialirt-db-query/query?{urlencode(query_params)}"
 
     logger.info("Algorithm query: GET %s", url)
     request = urllib.request.Request(url, method="GET")
