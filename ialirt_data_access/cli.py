@@ -1,10 +1,16 @@
 #!/usr/bin/env python3
 
-"""Command line interface to query IALIRT logs in the s3 bucket.
+"""Command line interface to query IALIRT database and logs in the s3 bucket.
 
 Usage:
     ialirt_data_access --debug --url <url> ialirt-log-query
     --year <year> --doy <doy> --instance <instance>
+
+    ialirt_data_access --debug --url <url> ialirt-log-download
+    --filename <filename> --downloads_dir <downloads_dir>
+
+    ialirt_data_access --debug --url <url> ialirt-db-query
+    --met_start <met_start> --met_end <met_end>
 """
 
 import argparse
@@ -12,7 +18,6 @@ import logging
 from pathlib import Path
 
 import ialirt_data_access
-from ialirt_data_access import algorithm  # import the new module
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -58,7 +63,7 @@ def _query_parser(args: argparse.Namespace):
         print(e)
 
 
-def _algorithm_query_parser(args: argparse.Namespace):
+def _db_query_parser(args: argparse.Namespace):
     """Query the I-ALiRT Algorithm DynamoDB.
 
     Parameters
@@ -80,7 +85,7 @@ def _algorithm_query_parser(args: argparse.Namespace):
     # Remove any keys with None values.
     query_params = {k: v for k, v in query_params.items() if v is not None}
     try:
-        query_results = algorithm.query_algorithm(**query_params)
+        query_results = ialirt_data_access.algorithm_query(**query_params)
         logger.info("Query results: %s", query_results)
         print(query_results)
     except Exception as e:
@@ -159,9 +164,28 @@ def main():
         "--downloads_dir",
         type=Path,
         required=False,
-        help="Example: flight_iois.log.YYYY-DOYTHH:MM:SS.ssssss",
+        help="Example: /path/to/downloads/dir",
     )
     download_parser.set_defaults(func=_download_parser)
+
+    # Query DB command
+    db_query_parser = subparsers.add_parser("ialirt-db-query")
+    db_query_parser.add_argument(
+        "--met_start", type=int, required=False, help="Start of mission elapsed time."
+    )
+    db_query_parser.add_argument(
+        "--met_end", type=int, required=False, help="End of mission elapsed time."
+    )
+    db_query_parser.add_argument(
+        "--insert_time_start", type=str, required=False, help="Start of insert time."
+    )
+    db_query_parser.add_argument(
+        "--insert_time_end", type=str, required=False, help="End of insert time."
+    )
+    db_query_parser.add_argument(
+        "--product_name", type=str, required=False, help="Product name."
+    )
+    db_query_parser.set_defaults(func=_db_query_parser)
 
     # Parse the arguments and set the values
     args = parser.parse_args()

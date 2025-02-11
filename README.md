@@ -24,8 +24,29 @@ $ ialirt_data_access --url <url> ialirt-log-query --year <year> --doy <doy> --in
 Download a log and place in Downloads directory or optionally specify another local directory by appending --downloads_dir <directory> to the command
 
 ```bash
-$ ialirt_data_access --url <url> ialirt-log-download ----filename <filename>
+$ ialirt_data_access --url <url> ialirt-log-download --filename <filename>
 ```
+
+### Query the database
+
+Query the database for a given time and/or data product. Examples shown below.
+
+```bash
+$ ialirt_data_access --url <url> ialirt-db-query --insert_time_start <insert_time_start> --insert_time_end <insert_time_end> --product_name <product_name>
+```
+or
+```bash
+$ ialirt_data_access --url <url> ialirt-db-query --met_start <met_start> --met_end <met_end>
+```
+or
+```bash
+$ ialirt_data_access --url <url> ialirt-db-query --product_name <product_name>
+```
+or
+```bash
+$ ialirt_data_access --url <url> ialirt-db-query --met_start <met_start> --product_name <product_name_prefix*>
+```
+
 
 ## Importing as a package
 
