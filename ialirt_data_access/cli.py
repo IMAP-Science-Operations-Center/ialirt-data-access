@@ -12,6 +12,7 @@ import logging
 from pathlib import Path
 
 import ialirt_data_access
+from ialirt_data_access import algorithm  # import the new module
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -55,7 +56,36 @@ def _query_parser(args: argparse.Namespace):
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         logger.error("An error occurred: %s", e)
         print(e)
-        return
+
+
+def _algorithm_query_parser(args: argparse.Namespace):
+    """Query the I-ALiRT Algorithm DynamoDB.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed arguments.
+
+    Returns
+    -------
+    None
+    """
+    query_params = {
+        "met_start": args.met_start,
+        "met_end": args.met_end,
+        "insert_time_start": args.insert_time_start,
+        "insert_time_end": args.insert_time_end,
+        "product_name": args.product_name,
+    }
+    # Remove any keys with None values.
+    query_params = {k: v for k, v in query_params.items() if v is not None}
+    try:
+        query_results = algorithm.query_algorithm(**query_params)
+        logger.info("Query results: %s", query_results)
+        print(query_results)
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        print(f"Error: {e}")
 
 
 def main():
