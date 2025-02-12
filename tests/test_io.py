@@ -116,3 +116,28 @@ def test_download_already_exists(mock_urlopen: unittest.mock.MagicMock, tmp_path
     assert result == destination
     # Assert no HTTP request was made
     assert mock_urlopen.call_count == 0
+
+
+def test_algorithm_query(mock_urlopen: unittest.mock.MagicMock):
+    """Test a basic call to the algorithm query API with multiple query parameters."""
+    query_params = {
+        "met_start": "100",
+        "met_end": "130",
+        "product_name": "codicelo_product_1",
+    }
+    # Test that algorithm_query correctly retrieves, decodes, and returns the JSON data
+    expected_response = [{"result": "data"}]
+    _set_mock_data(mock_urlopen, json.dumps(expected_response).encode("utf-8"))
+
+    response = ialirt_data_access.algorithm_query(
+        met_start="100", met_end="130", product_name="codicelo_product_1"
+    )
+    assert response == expected_response
+
+    # Should have only been one call to urlopen
+    mock_urlopen.assert_called_once()
+
+    urlopen_call = mock_urlopen.mock_calls[0].args[0]
+    expected_query = urlencode(query_params)
+    expected_url = f"https://ialirt.test.com/ialirt-db-query/query?{expected_query}"
+    assert urlopen_call.full_url == expected_url
