@@ -3,13 +3,13 @@
 """Command line interface to query IALIRT database and logs in the s3 bucket.
 
 Usage:
-    ialirt_data_access --debug --url <url> ialirt-log-query
+    ialirt-data-access --debug --url <url> ialirt-log-query
     --year <year> --doy <doy> --instance <instance>
 
-    ialirt_data_access --debug --url <url> ialirt-log-download
+    ialirt-data-access --debug --url <url> ialirt-log-download
     --filename <filename> --downloads_dir <downloads_dir>
 
-    ialirt_data_access --debug --url <url> ialirt-db-query
+    ialirt-data-access --debug --url <url> ialirt-db-query
     --met_start <met_start> --met_end <met_end>
 """
 
