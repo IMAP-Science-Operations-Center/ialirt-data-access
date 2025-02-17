@@ -6,12 +6,12 @@ Provides a convenient way to query and download log files.
 
 import os
 
-from ialirt_data_access.io import algorithm_query, download, query
+from ialirt_data_access.io import data_product_query, download, query
 
 __all__ = [
     "query",
     "download",
-    "algorithm_query",
+    "data_product_query",
 ]
 __version__ = "0.2.0"
 

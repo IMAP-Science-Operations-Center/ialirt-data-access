@@ -147,7 +147,7 @@ def download(filename: str, downloads_dir: Optional[Path] = None) -> Path:
     return destination
 
 
-def algorithm_query(
+def data_product_query(
     *,
     met_start: Optional[str] = None,
     met_end: Optional[str] = None,
@@ -161,7 +161,7 @@ def algorithm_query(
     `ialirt_data_access.config` and sends a GET request with the provided
     query parameters. For example, calling:
 
-        algorithm_query(met_start="100")
+        data_product_query(met_start="100")
 
     will send a GET request to:
 

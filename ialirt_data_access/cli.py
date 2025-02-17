@@ -63,7 +63,7 @@ def _query_parser(args: argparse.Namespace):
         print(e)
 
 
-def _db_query_parser(args: argparse.Namespace):
+def _data_product_query_parser(args: argparse.Namespace):
     """Query the I-ALiRT Algorithm DynamoDB.
 
     Parameters
@@ -85,7 +85,7 @@ def _db_query_parser(args: argparse.Namespace):
     # Remove any keys with None values.
     query_params = {k: v for k, v in query_params.items() if v is not None}
     try:
-        query_results = ialirt_data_access.algorithm_query(**query_params)
+        query_results = ialirt_data_access.data_product_query(**query_params)
         logger.info("Query results: %s", query_results)
         print(query_results)
     except Exception as e:
@@ -182,10 +182,11 @@ def main():
     db_query_parser.add_argument(
         "--insert_time_end", type=str, required=False, help="End of insert time."
     )
+    # TODO: Point help to valid options.
     db_query_parser.add_argument(
         "--product_name", type=str, required=False, help="Product name."
     )
-    db_query_parser.set_defaults(func=_db_query_parser)
+    db_query_parser.set_defaults(func=_data_product_query_parser)
 
     # Parse the arguments and set the values
     args = parser.parse_args()

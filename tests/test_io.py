@@ -118,18 +118,18 @@ def test_download_already_exists(mock_urlopen: unittest.mock.MagicMock, tmp_path
     assert mock_urlopen.call_count == 0
 
 
-def test_algorithm_query(mock_urlopen: unittest.mock.MagicMock):
-    """Test a basic call to the algorithm query API with multiple query parameters."""
+def test_data_product_query(mock_urlopen: unittest.mock.MagicMock):
+    """Test a call to the data product query API with multiple query parameters."""
     query_params = {
         "met_start": "100",
         "met_end": "130",
         "product_name": "codicelo_product_1",
     }
-    # Test that algorithm_query correctly retrieves, decodes, and returns the JSON data
+    # Test that data_product_query retrieves, decodes, and returns the JSON data
     expected_response = [{"result": "data"}]
     _set_mock_data(mock_urlopen, json.dumps(expected_response).encode("utf-8"))
 
-    response = ialirt_data_access.algorithm_query(
+    response = ialirt_data_access.data_product_query(
         met_start="100", met_end="130", product_name="codicelo_product_1"
     )
     assert response == expected_response
