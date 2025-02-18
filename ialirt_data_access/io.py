@@ -145,3 +145,66 @@ def download(filename: str, downloads_dir: Optional[Path] = None) -> Path:
             print(f"Successfully downloaded the file to: {destination}")
 
     return destination
+
+
+def data_product_query(
+    *,
+    met_start: Optional[str] = None,
+    met_end: Optional[str] = None,
+    insert_time_start: Optional[str] = None,
+    insert_time_end: Optional[str] = None,
+    product_name: Optional[str] = None,
+) -> list:
+    """Query the algorithm API endpoint.
+
+    This function constructs a URL using the base URL from
+    `ialirt_data_access.config` and sends a GET request with the provided
+    query parameters. For example, calling:
+
+        data_product_query(met_start="100")
+
+    will send a GET request to:
+
+        https://ialirt.dev.imap-mission.com/ialirt-db-query/query?met_start=100
+
+    Parameters
+    ----------
+    met_start : Optional[str]
+        Start of MET filter.
+    met_end : Optional[str]
+        End of MET filter.
+    insert_time_start : Optional[str]
+        Start of insert_time filter.
+    insert_time_end : Optional[str]
+        End of insert_time filter.
+    product_name : Optional[str]
+        Filter on product name. If ending with '*', the backend treats it
+        as a prefix search.
+
+    Returns
+    -------
+    list
+        List of items returned by the algorithm query endpoint.
+    """
+    query_params = {}
+    if met_start is not None:
+        query_params["met_start"] = met_start
+    if met_end is not None:
+        query_params["met_end"] = met_end
+    if insert_time_start is not None:
+        query_params["insert_time_start"] = insert_time_start
+    if insert_time_end is not None:
+        query_params["insert_time_end"] = insert_time_end
+    if product_name is not None:
+        query_params["product_name"] = product_name
+
+    url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
+    url += f"/ialirt-db-query/query?{urlencode(query_params)}"
+
+    logger.info("Algorithm query: GET %s", url)
+    request = urllib.request.Request(url, method="GET")
+    with _get_url_response(request) as response:
+        items = response.read().decode("utf-8")
+        logger.debug("Algorithm query response: %s", items)
+        items = json.loads(items)
+    return items
