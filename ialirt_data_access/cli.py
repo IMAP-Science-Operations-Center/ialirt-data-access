@@ -6,7 +6,7 @@ Usage:
     ialirt-data-access --debug --url <url> ialirt-log-query
     --year <year> --doy <doy> --instance <instance>
 
-    ialirt-data-access --debug --url <url> ialirt-log-download
+    ialirt-data-access --debug --url <url> ialirt-download
     --filename <filename> --downloads_dir <downloads_dir>
 
     ialirt-data-access --debug --url <url> ialirt-db-query
@@ -153,7 +153,7 @@ def main():
     query_parser.set_defaults(func=_query_parser)
 
     # Download command
-    download_parser = subparsers.add_parser("ialirt-log-download")
+    download_parser = subparsers.add_parser("ialirt-download")
     download_parser.add_argument(
         "--filename",
         type=str,
