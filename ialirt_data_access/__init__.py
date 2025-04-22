@@ -9,9 +9,9 @@ import os
 from ialirt_data_access.io import data_product_query, download, query
 
 __all__ = [
-    "query",
-    "download",
     "data_product_query",
+    "download",
+    "query",
 ]
 __version__ = "0.2.0"
 
