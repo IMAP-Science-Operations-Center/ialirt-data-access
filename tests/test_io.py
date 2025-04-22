@@ -97,7 +97,7 @@ def test_download(mock_urlopen: unittest.mock.MagicMock, tmp_path: Path):
     mock_urlopen.assert_called_once()
     urlopen_call = mock_urlopen.mock_calls[0].args[0]
     called_url = urlopen_call.full_url
-    expected_url = f"https://ialirt.test.com/ialirt-log-download/logs/{filename}"
+    expected_url = f"https://ialirt.test.com/ialirt-download/logs/{filename}"
     assert called_url == expected_url
     assert urlopen_call.method == "GET"
 

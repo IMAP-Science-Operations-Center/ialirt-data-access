@@ -127,7 +127,7 @@ def download(filename: str, downloads_dir: Optional[Path] = None) -> Path:
         downloads_dir = Path.home() / "Downloads"
 
     url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
-    url += f"/ialirt-log-download/logs/{filename}"
+    url += f"/ialirt-download/logs/{filename}"
 
     downloads_dir.mkdir(parents=True, exist_ok=True)
     destination = downloads_dir / filename
