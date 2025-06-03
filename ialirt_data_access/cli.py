@@ -78,8 +78,8 @@ def _data_product_query_parser(args: argparse.Namespace):
     query_params = {
         "met_start": args.met_start,
         "met_end": args.met_end,
-        "insert_time_start": args.insert_time_start,
-        "insert_time_end": args.insert_time_end,
+        "utc_start": args.utc_start,
+        "utc_end": args.utc_end,
         "product_name": args.product_name,
     }
     # Remove any keys with None values.
@@ -177,10 +177,10 @@ def main():
         "--met_end", type=int, required=False, help="End of mission elapsed time."
     )
     db_query_parser.add_argument(
-        "--insert_time_start", type=str, required=False, help="Start of insert time."
+        "--utc_start", type=str, required=False, help="Start of utc time."
     )
     db_query_parser.add_argument(
-        "--insert_time_end", type=str, required=False, help="End of insert time."
+        "--utc_end", type=str, required=False, help="End of utc time."
     )
     # TODO: Point help to valid options.
     db_query_parser.add_argument(

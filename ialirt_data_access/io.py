@@ -151,8 +151,8 @@ def data_product_query(
     *,
     met_start: Optional[str] = None,
     met_end: Optional[str] = None,
-    insert_time_start: Optional[str] = None,
-    insert_time_end: Optional[str] = None,
+    utc_start: Optional[str] = None,
+    utc_end: Optional[str] = None,
     product_name: Optional[str] = None,
 ) -> list:
     """Query the algorithm API endpoint.
@@ -173,10 +173,10 @@ def data_product_query(
         Start of MET filter.
     met_end : Optional[str]
         End of MET filter.
-    insert_time_start : Optional[str]
-        Start of insert_time filter.
-    insert_time_end : Optional[str]
-        End of insert_time filter.
+    utc_start : Optional[str]
+        Start of utc_time filter.
+    utc_end : Optional[str]
+        End of utc_time filter.
     product_name : Optional[str]
         Filter on product name. If ending with '*', the backend treats it
         as a prefix search.
@@ -191,15 +191,15 @@ def data_product_query(
         query_params["met_start"] = met_start
     if met_end is not None:
         query_params["met_end"] = met_end
-    if insert_time_start is not None:
-        query_params["insert_time_start"] = insert_time_start
-    if insert_time_end is not None:
-        query_params["insert_time_end"] = insert_time_end
+    if utc_start is not None:
+        query_params["utc_start"] = utc_start
+    if utc_end is not None:
+        query_params["utc_end"] = utc_end
     if product_name is not None:
         query_params["product_name"] = product_name
 
     url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
-    url += f"/ialirt-db-query/query?{urlencode(query_params)}"
+    url += f"/ialirt-db-query?{urlencode(query_params)}"
 
     logger.info("Algorithm query: GET %s", url)
     request = urllib.request.Request(url, method="GET")

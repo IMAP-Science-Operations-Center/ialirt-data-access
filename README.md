@@ -32,7 +32,7 @@ $ ialirt-data-access --url <url> ialirt-log-download --filename <filename>
 Query the database for a given time and/or data product. Examples shown below.
 
 ```bash
-$ ialirt-data-access --url <url> ialirt-db-query --insert_time_start <insert_time_start> --insert_time_end <insert_time_end> --product_name <product_name>
+$ ialirt-data-access --url <url> ialirt-db-query --utc_start <utc_start> --utc_end <utc_end> --product_name <product_name>
 ```
 or
 ```bash
