@@ -35,7 +35,7 @@ def _download_parser(args: argparse.Namespace):
         An object containing the parsed arguments and their values
     """
     try:
-        ialirt_data_access.download(args.filename, args.downloads_dir)
+        ialirt_data_access.download(args.filename, args.filetype, args.downloads_dir)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         print(e)
 
@@ -217,6 +217,13 @@ def main():
         type=str,
         required=True,
         help="Example: flight_iois.log.YYYY-DOYTHH:MM:SS.ssssss",
+    )
+    download_parser.add_argument(
+        "--filetype",
+        type=str,
+        choices=["logs", "packets", "archive"],
+        required=True,
+        help="Filetype: logs, packets, or archive",
     )
     download_parser.add_argument(
         "--downloads_dir",

@@ -100,13 +100,16 @@ def test_query_bad_params(mock_urlopen: unittest.mock.MagicMock):
 def test_download(mock_urlopen: unittest.mock.MagicMock, tmp_path: Path):
     """Test the download function."""
     filename = "flight_iois_1.log.2024-045T16-54-46_123456.txt"
-    downloaded_file = ialirt_data_access.download(filename, downloads_dir=tmp_path)
+    filetype = "logs"
+    downloaded_file = ialirt_data_access.download(
+        filename, filetype, downloads_dir=tmp_path / filetype
+    )
 
     # Assert that the file was created
     assert downloaded_file.exists()
 
     # Verify the file was saved to the correct location
-    expected_path = tmp_path / filename
+    expected_path = tmp_path / filetype / filename
     assert downloaded_file == expected_path
 
     # Verify that the file contains the expected content
@@ -125,14 +128,17 @@ def test_download(mock_urlopen: unittest.mock.MagicMock, tmp_path: Path):
 def test_download_already_exists(mock_urlopen: unittest.mock.MagicMock, tmp_path: Path):
     """Test that downloading a file that already exists does not make any requests."""
     filename = "flight_iois_1.log.2024-045T16-54-46_123456.txt"
+    filetype = "logs"
 
     # Set up the destination and create the file
-    downloads_dir = tmp_path / "Downloads"
+    downloads_dir = tmp_path / "Downloads" / filetype
     destination = downloads_dir / filename
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.touch(exist_ok=True)
 
-    result = ialirt_data_access.download(filename, downloads_dir=downloads_dir)
+    result = ialirt_data_access.download(
+        filename, filetype, downloads_dir=downloads_dir
+    )
     assert result == destination
     # Assert no HTTP request was made
     assert mock_urlopen.call_count == 0

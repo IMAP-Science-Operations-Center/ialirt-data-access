@@ -180,13 +180,17 @@ def packet_query(
     return items
 
 
-def download(filename: str, downloads_dir: Optional[Path] = None) -> Path:
+def download(
+    filename: str, filetype: str, downloads_dir: Optional[Path] = None
+) -> Path:
     """Download the logs.
 
     Parameters
     ----------
     filename : str
         Filename
+    filetype : str
+        Filetype
     downloads_dir : Path
         Directory to save the file
 
@@ -196,10 +200,10 @@ def download(filename: str, downloads_dir: Optional[Path] = None) -> Path:
         Path to the downloaded file
     """
     if downloads_dir is None:
-        downloads_dir = Path.home() / "Downloads"
+        downloads_dir = Path.home() / "Downloads" / filetype
 
     url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
-    url += f"/ialirt-download/logs/{filename}"
+    url += f"/ialirt-download/{filetype}/{filename}"
 
     downloads_dir.mkdir(parents=True, exist_ok=True)
     destination = downloads_dir / filename
