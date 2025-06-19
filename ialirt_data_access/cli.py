@@ -116,8 +116,8 @@ def _data_product_query_parser(args: argparse.Namespace):
     query_params = {
         "met_start": args.met_start,
         "met_end": args.met_end,
-        "utc_start": args.utc_start,
-        "utc_end": args.utc_end,
+        "met_in_utc_start": args.met_in_utc_start,
+        "met_in_utc_end": args.met_in_utc_end,
         "last_modified_start": args.last_modified_start,
         "last_modified_end": args.last_modified_end,
     }
@@ -242,10 +242,10 @@ def main():
         "--met_end", type=int, required=False, help="End of mission elapsed time."
     )
     db_query_parser.add_argument(
-        "--utc_start", type=str, required=False, help="Start of utc time."
+        "--met_in_utc_start", type=str, required=False, help="Start of met time in utc."
     )
     db_query_parser.add_argument(
-        "--utc_end", type=str, required=False, help="End of utc time."
+        "--met_in_utc_end", type=str, required=False, help="End of met time in utc."
     )
     db_query_parser.add_argument(
         "--last_modified_start",
