@@ -15,7 +15,7 @@ import pytest
 import ialirt_data_access
 
 
-@pytest.fixture()
+@pytest.fixture
 def mock_urlopen():
     """Mock urlopen to return a file-like object."""
     mock_data = b"Mock file content"
