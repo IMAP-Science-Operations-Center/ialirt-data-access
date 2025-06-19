@@ -39,21 +39,21 @@ def test_request_errors(mock_urlopen: unittest.mock.MagicMock):
     )
     query_params = {"year": "2024", "doy": "045", "instance": "1"}
     with pytest.raises(ialirt_data_access.io.IALIRTDataAccessError, match="HTTP Error"):
-        ialirt_data_access.query(**query_params)
+        ialirt_data_access.log_query(**query_params)
 
     # Set up the mock to raise an URLError
     mock_urlopen.side_effect = URLError(reason="Not Found")
     mock_urlopen.side_effect = URLError(reason="Not Found")
     with pytest.raises(ialirt_data_access.io.IALIRTDataAccessError, match="URL Error"):
-        ialirt_data_access.query(**query_params)
+        ialirt_data_access.log_query(**query_params)
 
 
-def test_query(mock_urlopen: unittest.mock.MagicMock):
+def test_log_query(mock_urlopen: unittest.mock.MagicMock):
     """Test a basic call to the Query API."""
     filename = "flight_iois_1.log.2024-045T16-54-46_123456.txt"
     query_params = {"year": "2024", "doy": "045", "instance": "1"}
     _set_mock_data(mock_urlopen, json.dumps([filename]).encode("utf-8"))
-    response = ialirt_data_access.query(**query_params)
+    response = ialirt_data_access.log_query(**query_params)
     assert response == ["flight_iois_1.log.2024-045T16-54-46_123456.txt"]
 
     # Should have only been one call to urlopen
@@ -67,12 +67,32 @@ def test_query(mock_urlopen: unittest.mock.MagicMock):
     assert called_url == expected_url_encoded
 
 
+def test_packet_query(mock_urlopen: unittest.mock.MagicMock):
+    """Test a basic call to the Packet Query API."""
+    filename = "iois_1_packets_2025_148_16_24_27.bin"
+    query_params = {"year": "2025", "doy": "148", "hh": "16", "mm": "24"}
+    _set_mock_data(mock_urlopen, json.dumps([filename]).encode("utf-8"))
+
+    response = ialirt_data_access.packet_query(**query_params)
+    assert response == [filename]
+
+    # Should have only been one call to urlopen
+    mock_urlopen.assert_called_once()
+    # Assert that the correct URL was used for the query
+    urlopen_call = mock_urlopen.mock_calls[0].args[0]
+    called_url = urlopen_call.full_url
+    expected_url_encoded = (
+        f"https://ialirt.test.com/ialirt-packet-query?{urlencode(query_params)}"
+    )
+    assert called_url == expected_url_encoded
+
+
 def test_query_bad_params(mock_urlopen: unittest.mock.MagicMock):
     """Test a call to the Query API that has invalid parameters."""
     with pytest.raises(
         TypeError, match="got an unexpected keyword argument 'bad_param'"
     ):
-        ialirt_data_access.query(bad_param="test")
+        ialirt_data_access.log_query(bad_param="test")
 
     assert mock_urlopen.call_count == 0
 
@@ -123,15 +143,12 @@ def test_data_product_query(mock_urlopen: unittest.mock.MagicMock):
     query_params = {
         "met_start": "100",
         "met_end": "130",
-        "product_name": "codicelo_product_1",
     }
     # Test that data_product_query retrieves, decodes, and returns the JSON data
     expected_response = [{"result": "data"}]
     _set_mock_data(mock_urlopen, json.dumps(expected_response).encode("utf-8"))
 
-    response = ialirt_data_access.data_product_query(
-        met_start="100", met_end="130", product_name="codicelo_product_1"
-    )
+    response = ialirt_data_access.data_product_query(met_start="100", met_end="130")
     assert response == expected_response
 
     # Should have only been one call to urlopen
@@ -139,5 +156,5 @@ def test_data_product_query(mock_urlopen: unittest.mock.MagicMock):
 
     urlopen_call = mock_urlopen.mock_calls[0].args[0]
     expected_query = urlencode(query_params)
-    expected_url = f"https://ialirt.test.com/ialirt-db-query/query?{expected_query}"
+    expected_url = f"https://ialirt.test.com/ialirt-db-query?{expected_query}"
     assert urlopen_call.full_url == expected_url

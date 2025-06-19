@@ -47,7 +47,7 @@ def _get_url_response(request: urllib.request.Request):
 def _validate_query_params(  # noqa: PLR0913
     year: str,
     doy: str,
-    instance: Optional[str] = 1,
+    instance: Optional[str] = "1",
     hh: Optional[str] = None,
     mm: Optional[str] = None,
     ss: Optional[str] = None,
