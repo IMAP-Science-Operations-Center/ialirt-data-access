@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
-"""Command line interface to query IALIRT database and logs in the s3 bucket.
+"""Command line interface to query IALIRT database and query/download directories in s3.
 
 Usage:
     ialirt-data-access --debug --url <url> ialirt-log-query
     --year <year> --doy <doy> --instance <instance>
+
+    ialirt-data-access --url <url> ialirt-packet-query
+    --year 2025 --doy 148 --hh 16 --mm 24
 
     ialirt-data-access --debug --url <url> ialirt-download
     --filename <filename> --downloads_dir <downloads_dir>
@@ -169,14 +172,14 @@ def main():
     subparsers = parser.add_subparsers(required=True)
 
     # Log query command
-    query_parser = subparsers.add_parser("ialirt-log-query")
-    query_parser.add_argument(
+    log_query_parser = subparsers.add_parser("ialirt-log-query")
+    log_query_parser.add_argument(
         "--year", type=str, required=True, help="Year of the logs (e.g., 2024)."
     )
-    query_parser.add_argument(
+    log_query_parser.add_argument(
         "--doy", type=str, required=True, help="Day of year of the logs (e.g., 045)."
     )
-    query_parser.add_argument(
+    log_query_parser.add_argument(
         "--instance",
         type=str,
         required=True,
@@ -186,9 +189,8 @@ def main():
             "2",
         ],
     )
-    query_parser.set_defaults(func=_log_query_parser)
+    log_query_parser.set_defaults(func=_log_query_parser)
 
-    # Packet query command
     # Packet query command
     packet_query_parser = subparsers.add_parser("ialirt-packet-query")
     packet_query_parser.add_argument(
@@ -238,9 +240,17 @@ def main():
     db_query_parser.add_argument(
         "--utc_end", type=str, required=False, help="End of utc time."
     )
-    # TODO: Point help to valid options.
     db_query_parser.add_argument(
-        "--product_name", type=str, required=False, help="Product name."
+        "--last_modified_start",
+        type=str,
+        required=False,
+        help="Start of last_modified time.",
+    )
+    db_query_parser.add_argument(
+        "--last_modified_end",
+        type=str,
+        required=False,
+        help="End of last_modified time.",
     )
     db_query_parser.set_defaults(func=_data_product_query_parser)
 
