@@ -37,7 +37,7 @@ def _download_parser(args: argparse.Namespace):
         print(e)
 
 
-def _query_parser(args: argparse.Namespace):
+def _log_query_parser(args: argparse.Namespace):
     """Query the I-ALiRT log API.
 
     Parameters
@@ -54,12 +54,47 @@ def _query_parser(args: argparse.Namespace):
         "doy": args.doy,
         "instance": args.instance,
     }
+    # Remove any keys with None values.
+    query_params = {k: v for k, v in query_params.items() if v is not None}
     try:
-        query_results = ialirt_data_access.query(**query_params)
+        query_results = ialirt_data_access.log_query(**query_params)
         logger.info("Query results: %s", query_results)
         print(query_results)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         logger.error("An error occurred: %s", e)
+        print(e)
+
+
+def _packet_query_parser(args: argparse.Namespace):
+    """Query the I-ALiRT packet API.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed arguments including year, doy, hh, mm, ss.
+
+    Returns
+    -------
+    None
+    """
+    query_params = {
+        "year": args.year,
+        "doy": args.doy,
+        "hh": args.hh,
+        "mm": args.mm,
+        "ss": args.ss,
+    }
+    # Remove any keys with None values.
+    query_params = {k: v for k, v in query_params.items() if v is not None}
+    try:
+        query_results = ialirt_data_access.packet_query(**query_params)
+        logger.info("Query results: %s", query_results)
+        print(query_results)
+    except ialirt_data_access.io.IALIRTDataAccessError as e:
+        logger.error("An error occurred: %s", e)
+        print(e)
+    except ValueError as e:
+        logger.error("Invalid input: %s", e)
         print(e)
 
 
@@ -80,7 +115,8 @@ def _data_product_query_parser(args: argparse.Namespace):
         "met_end": args.met_end,
         "utc_start": args.utc_start,
         "utc_end": args.utc_end,
-        "product_name": args.product_name,
+        "last_modified_start": args.last_modified_start,
+        "last_modified_end": args.last_modified_end,
     }
     # Remove any keys with None values.
     query_params = {k: v for k, v in query_params.items() if v is not None}
@@ -132,7 +168,7 @@ def main():
 
     subparsers = parser.add_subparsers(required=True)
 
-    # Query command
+    # Log query command
     query_parser = subparsers.add_parser("ialirt-log-query")
     query_parser.add_argument(
         "--year", type=str, required=True, help="Year of the logs (e.g., 2024)."
@@ -150,7 +186,27 @@ def main():
             "2",
         ],
     )
-    query_parser.set_defaults(func=_query_parser)
+    query_parser.set_defaults(func=_log_query_parser)
+
+    # Packet query command
+    # Packet query command
+    packet_query_parser = subparsers.add_parser("ialirt-packet-query")
+    packet_query_parser.add_argument(
+        "--year", type=str, required=True, help="Year of the packet (e.g., 2025)."
+    )
+    packet_query_parser.add_argument(
+        "--doy", type=str, required=True, help="Day of year of the packet (e.g., 148)."
+    )
+    packet_query_parser.add_argument(
+        "--hh", type=str, required=False, help="Hour (0 to 23)."
+    )
+    packet_query_parser.add_argument(
+        "--mm", type=str, required=False, help="Minute (0 to 59)."
+    )
+    packet_query_parser.add_argument(
+        "--ss", type=str, required=False, help="Second (0 to 59)."
+    )
+    packet_query_parser.set_defaults(func=_packet_query_parser)
 
     # Download command
     download_parser = subparsers.add_parser("ialirt-download")
