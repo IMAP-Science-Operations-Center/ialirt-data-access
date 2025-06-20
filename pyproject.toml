@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ialirt-data-access"
-version = "0.2.0"
+version = "0.3.0"
 description = "I-ALiRT Data Access"
 authors = ["IMAP SDC Developers <imap-sdc@lists.lasp.colorado.edu>"]
 readme = "README.md"
