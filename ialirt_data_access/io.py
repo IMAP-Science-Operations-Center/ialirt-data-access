@@ -287,4 +287,9 @@ def data_product_query(  # noqa: PLR0913
         items = response.read().decode("utf-8")
         logger.debug("Algorithm query response: %s", items)
         items = json.loads(items)
+
+    if items:
+        max_last_modified = max(item["last_modified"] for item in items)
+        logger.info("Maximum last_modified: %s", max_last_modified)
+
     return items
