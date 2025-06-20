@@ -17,7 +17,9 @@ Usage:
 """
 
 import argparse
+import json
 import logging
+from datetime import datetime
 from pathlib import Path
 
 import ialirt_data_access
@@ -125,8 +127,19 @@ def _data_product_query_parser(args: argparse.Namespace):
     query_params = {k: v for k, v in query_params.items() if v is not None}
     try:
         query_results = ialirt_data_access.data_product_query(**query_params)
-        logger.info("Query results: %s", query_results)
-        print(query_results)
+        logger.info("Returned %d records", len(query_results))
+
+        downloads_dir = args.downloads_dir
+        if downloads_dir is None:
+            downloads_dir = Path.home() / "Downloads"
+        downloads_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        filename = f"imap_ialirt_l1_realtime_{timestamp}.json"
+        output_path = downloads_dir / filename
+
+        with output_path.open("w") as f:
+            json.dump(query_results, f, indent=2)
+        print(f"Saved query results to: {output_path}")
     except Exception as e:
         logger.error("An error occurred: %s", e)
         print(f"Error: {e}")
@@ -258,6 +271,12 @@ def main():
         type=str,
         required=False,
         help="End of last_modified time.",
+    )
+    db_query_parser.add_argument(
+        "--downloads_dir",
+        type=Path,
+        required=False,
+        help="Example: /path/to/downloads/dir",
     )
     db_query_parser.set_defaults(func=_data_product_query_parser)
 
