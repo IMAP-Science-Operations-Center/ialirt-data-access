@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
-"""Command line interface to query IALIRT database and logs in the s3 bucket.
+"""Command line interface to query IALIRT database and query/download directories in s3.
 
 Usage:
     ialirt-data-access --debug --url <url> ialirt-log-query
     --year <year> --doy <doy> --instance <instance>
+
+    ialirt-data-access --url <url> ialirt-packet-query
+    --year 2025 --doy 148 --hh 16 --mm 24
 
     ialirt-data-access --debug --url <url> ialirt-download
     --filename <filename> --downloads_dir <downloads_dir>
@@ -32,12 +35,12 @@ def _download_parser(args: argparse.Namespace):
         An object containing the parsed arguments and their values
     """
     try:
-        ialirt_data_access.download(args.filename, args.downloads_dir)
+        ialirt_data_access.download(args.filename, args.filetype, args.downloads_dir)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         print(e)
 
 
-def _query_parser(args: argparse.Namespace):
+def _log_query_parser(args: argparse.Namespace):
     """Query the I-ALiRT log API.
 
     Parameters
@@ -54,12 +57,47 @@ def _query_parser(args: argparse.Namespace):
         "doy": args.doy,
         "instance": args.instance,
     }
+    # Remove any keys with None values.
+    query_params = {k: v for k, v in query_params.items() if v is not None}
     try:
-        query_results = ialirt_data_access.query(**query_params)
+        query_results = ialirt_data_access.log_query(**query_params)
         logger.info("Query results: %s", query_results)
         print(query_results)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         logger.error("An error occurred: %s", e)
+        print(e)
+
+
+def _packet_query_parser(args: argparse.Namespace):
+    """Query the I-ALiRT packet API.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed arguments including year, doy, hh, mm, ss.
+
+    Returns
+    -------
+    None
+    """
+    query_params = {
+        "year": args.year,
+        "doy": args.doy,
+        "hh": args.hh,
+        "mm": args.mm,
+        "ss": args.ss,
+    }
+    # Remove any keys with None values.
+    query_params = {k: v for k, v in query_params.items() if v is not None}
+    try:
+        query_results = ialirt_data_access.packet_query(**query_params)
+        logger.info("Query results: %s", query_results)
+        print(query_results)
+    except ialirt_data_access.io.IALIRTDataAccessError as e:
+        logger.error("An error occurred: %s", e)
+        print(e)
+    except ValueError as e:
+        logger.error("Invalid input: %s", e)
         print(e)
 
 
@@ -78,9 +116,10 @@ def _data_product_query_parser(args: argparse.Namespace):
     query_params = {
         "met_start": args.met_start,
         "met_end": args.met_end,
-        "insert_time_start": args.insert_time_start,
-        "insert_time_end": args.insert_time_end,
-        "product_name": args.product_name,
+        "met_in_utc_start": args.met_in_utc_start,
+        "met_in_utc_end": args.met_in_utc_end,
+        "last_modified_start": args.last_modified_start,
+        "last_modified_end": args.last_modified_end,
     }
     # Remove any keys with None values.
     query_params = {k: v for k, v in query_params.items() if v is not None}
@@ -132,15 +171,15 @@ def main():
 
     subparsers = parser.add_subparsers(required=True)
 
-    # Query command
-    query_parser = subparsers.add_parser("ialirt-log-query")
-    query_parser.add_argument(
+    # Log query command
+    log_query_parser = subparsers.add_parser("ialirt-log-query")
+    log_query_parser.add_argument(
         "--year", type=str, required=True, help="Year of the logs (e.g., 2024)."
     )
-    query_parser.add_argument(
+    log_query_parser.add_argument(
         "--doy", type=str, required=True, help="Day of year of the logs (e.g., 045)."
     )
-    query_parser.add_argument(
+    log_query_parser.add_argument(
         "--instance",
         type=str,
         required=True,
@@ -150,7 +189,26 @@ def main():
             "2",
         ],
     )
-    query_parser.set_defaults(func=_query_parser)
+    log_query_parser.set_defaults(func=_log_query_parser)
+
+    # Packet query command
+    packet_query_parser = subparsers.add_parser("ialirt-packet-query")
+    packet_query_parser.add_argument(
+        "--year", type=str, required=True, help="Year of the packet (e.g., 2025)."
+    )
+    packet_query_parser.add_argument(
+        "--doy", type=str, required=True, help="Day of year of the packet (e.g., 148)."
+    )
+    packet_query_parser.add_argument(
+        "--hh", type=str, required=False, help="Hour (0 to 23)."
+    )
+    packet_query_parser.add_argument(
+        "--mm", type=str, required=False, help="Minute (0 to 59)."
+    )
+    packet_query_parser.add_argument(
+        "--ss", type=str, required=False, help="Second (0 to 59)."
+    )
+    packet_query_parser.set_defaults(func=_packet_query_parser)
 
     # Download command
     download_parser = subparsers.add_parser("ialirt-download")
@@ -159,6 +217,13 @@ def main():
         type=str,
         required=True,
         help="Example: flight_iois.log.YYYY-DOYTHH:MM:SS.ssssss",
+    )
+    download_parser.add_argument(
+        "--filetype",
+        type=str,
+        choices=["logs", "packets", "archive"],
+        required=True,
+        help="Filetype: logs, packets, or archive",
     )
     download_parser.add_argument(
         "--downloads_dir",
@@ -177,14 +242,22 @@ def main():
         "--met_end", type=int, required=False, help="End of mission elapsed time."
     )
     db_query_parser.add_argument(
-        "--insert_time_start", type=str, required=False, help="Start of insert time."
+        "--met_in_utc_start", type=str, required=False, help="Start of met time in utc."
     )
     db_query_parser.add_argument(
-        "--insert_time_end", type=str, required=False, help="End of insert time."
+        "--met_in_utc_end", type=str, required=False, help="End of met time in utc."
     )
-    # TODO: Point help to valid options.
     db_query_parser.add_argument(
-        "--product_name", type=str, required=False, help="Product name."
+        "--last_modified_start",
+        type=str,
+        required=False,
+        help="Start of last_modified time.",
+    )
+    db_query_parser.add_argument(
+        "--last_modified_end",
+        type=str,
+        required=False,
+        help="End of last_modified time.",
     )
     db_query_parser.set_defaults(func=_data_product_query_parser)
 

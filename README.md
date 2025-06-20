@@ -1,6 +1,6 @@
 # I-ALiRT Data Access Package
 
-This lightweight Python package allows users to query and download log data.
+This lightweight Python package allows users to query the I-ALiRT database and list/download files from S3.
 
 ## Command Line Utility
 
@@ -19,20 +19,28 @@ Find all files from a given year, day of year, and instance
 $ ialirt-data-access --url <url> ialirt-log-query --year <year> --doy <doy> --instance <instance>
 ```
 
-### Download logs
+### Query / Search for packets
 
-Download a log and place in Downloads directory or optionally specify another local directory by appending --downloads_dir <directory> to the command
+Find all files from a given year, day of year, hour, minute, and second.
 
 ```bash
-$ ialirt-data-access --url <url> ialirt-log-download --filename <filename>
+$ ialirt-data-access --url <url> ialirt-packet-query --year <year> --doy <doy> [--hh <hour>] [--mm <minute>] [--ss <second>]
+```
+
+### Download from S3
+
+Download a file and place it in the Downloads/<filetype> directory by default, or optionally specify another location using --downloads_dir. Valid filetype options include: logs, packets, archive.
+
+```bash
+$ ialirt-data-access --url <url> ialirt-download --filetype <filetype> --filename <filename>
 ```
 
 ### Query the database
 
-Query the database for a given time and/or data product. Examples shown below.
+Query the database for a given time. Examples shown below.
 
 ```bash
-$ ialirt-data-access --url <url> ialirt-db-query --insert_time_start <insert_time_start> --insert_time_end <insert_time_end> --product_name <product_name>
+$ ialirt-data-access --url <url> ialirt-db-query --met_in_utc_start <met_in_utc_start> --met_in_utc_end <met_in_utc_end>
 ```
 or
 ```bash
@@ -40,11 +48,11 @@ $ ialirt-data-access --url <url> ialirt-db-query --met_start <met_start> --met_e
 ```
 or
 ```bash
-$ ialirt-data-access --url <url> ialirt-db-query --product_name <product_name>
+$ ialirt-data-access --url <url> ialirt-db-query --last_modified_start <last_modified_start> --last_modified_end <last_modified_end>
 ```
-or
+or to return all data from met_start onward
 ```bash
-$ ialirt-data-access --url <url> ialirt-db-query --met_start <met_start> --product_name <product_name_prefix*>
+$ ialirt-data-access --url <url> ialirt-db-query --met_start <met_start>
 ```
 
 
@@ -54,7 +62,7 @@ $ ialirt-data-access --url <url> ialirt-db-query --met_start <met_start> --produ
 import ialirt_data_access
 
 # Search for files
-results = ialirt_data_access.query(year="2024", doy="045", instance="1")
+results = ialirt_data_access.log_query(year="2024", doy="045", instance="1")
 ```
 
 ## Configuration

@@ -44,17 +44,30 @@ def _get_url_response(request: urllib.request.Request):
         raise IALIRTDataAccessError(message) from e
 
 
-def _validate_query_params(year: str, doy: str, instance: str):
-    """Validate the query parameters for the IALIRT log API.
+def _validate_query_params(  # noqa: PLR0913
+    year: str,
+    doy: str,
+    instance: Optional[str] = "1",
+    hh: Optional[str] = None,
+    mm: Optional[str] = None,
+    ss: Optional[str] = None,
+):
+    """Validate the query parameters for the IALIRT API.
 
     Parameters
     ----------
     year : str
         Year, must be a 4-digit string (e.g., '2024').
     doy : str
-        Day of year, must be a string between '001' and '365'.
-    instance : str
+        Day of year, must be a string between '001' and '366'.
+    instance : str, optional
         Instance number, must be either '1' or '2'.
+    hh : str, optional
+        Hour of day, 00 to 23.
+    mm : str, optional
+        Minute, 00 to 59.
+    ss : str, optional
+        Second, 00 to 59.
 
     Raises
     ------
@@ -64,12 +77,19 @@ def _validate_query_params(year: str, doy: str, instance: str):
     if not (year.isdigit() and len(year) == 4):
         raise ValueError("Year must be a 4-digit string (e.g., '2024').")
     if not (doy.isdigit() and 1 <= int(doy) <= 366):
-        raise ValueError("DOY must be a string between '001' and '365'.")
+        raise ValueError("DOY must be a string between '001' and '366'.")
     if instance not in {"1", "2"}:
         raise ValueError("Instance must be '1' or '2'.")
 
+    if hh is not None and (not hh.isdigit() or not 0 <= int(hh) <= 23):
+        raise ValueError("Hour must be a string between '00' and '23'.")
+    if mm is not None and (not mm.isdigit() or not 0 <= int(mm) <= 59):
+        raise ValueError("Minute must be a string between '00' and '59'.")
+    if ss is not None and (not ss.isdigit() or not 0 <= int(ss) <= 59):
+        raise ValueError("Second must be a string between '00' and '59'.")
 
-def query(*, year: str, doy: str, instance: str) -> list[str]:
+
+def log_query(*, year: str, doy: str, instance: str) -> list[str]:
     """Query the logs.
 
     Parameters
@@ -108,13 +128,69 @@ def query(*, year: str, doy: str, instance: str) -> list[str]:
     return items
 
 
-def download(filename: str, downloads_dir: Optional[Path] = None) -> Path:
+def packet_query(
+    *,
+    year: str,
+    doy: str,
+    hh: Optional[str] = None,
+    mm: Optional[str] = None,
+    ss: Optional[str] = None,
+) -> list[str]:
+    """Query the I-ALiRT packet files by partial datetime.
+
+    Parameters
+    ----------
+    year : str
+        Year, e.g., '2025'
+    doy : str
+        Day of year, e.g., '148'
+    hh : str, optional
+        Hour of day, 0 to 23
+    mm : str, optional
+        Minute, 0 to 59
+    ss : str, optional
+        Second, 0 to 59
+
+    Returns
+    -------
+    list of str
+        Matching packet file names.
+    """
+    query_params = {"year": year, "doy": doy}
+
+    if hh:
+        query_params["hh"] = hh
+    if mm:
+        query_params["mm"] = mm
+    if ss:
+        query_params["ss"] = ss
+
+    _validate_query_params(**query_params)
+
+    url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
+    url += f"/ialirt-packet-query?{urlencode(query_params)}"
+
+    logger.info("Querying packets for %s with url %s", query_params, url)
+    request = urllib.request.Request(url, method="GET")
+    with _get_url_response(request) as response:
+        items = response.read().decode("utf-8")
+        logger.debug("Packet query response: %s", items)
+        items = json.loads(items)
+
+    return items
+
+
+def download(
+    filename: str, filetype: str, downloads_dir: Optional[Path] = None
+) -> Path:
     """Download the logs.
 
     Parameters
     ----------
     filename : str
         Filename
+    filetype : str
+        Filetype
     downloads_dir : Path
         Directory to save the file
 
@@ -124,10 +200,10 @@ def download(filename: str, downloads_dir: Optional[Path] = None) -> Path:
         Path to the downloaded file
     """
     if downloads_dir is None:
-        downloads_dir = Path.home() / "Downloads"
+        downloads_dir = Path.home() / "Downloads" / filetype
 
     url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
-    url += f"/ialirt-download/logs/{filename}"
+    url += f"/ialirt-download/{filetype}/{filename}"
 
     downloads_dir.mkdir(parents=True, exist_ok=True)
     destination = downloads_dir / filename
@@ -147,13 +223,14 @@ def download(filename: str, downloads_dir: Optional[Path] = None) -> Path:
     return destination
 
 
-def data_product_query(
+def data_product_query(  # noqa: PLR0913
     *,
     met_start: Optional[str] = None,
     met_end: Optional[str] = None,
-    insert_time_start: Optional[str] = None,
-    insert_time_end: Optional[str] = None,
-    product_name: Optional[str] = None,
+    met_in_utc_start: Optional[str] = None,
+    met_in_utc_end: Optional[str] = None,
+    last_modified_start: Optional[str] = None,
+    last_modified_end: Optional[str] = None,
 ) -> list:
     """Query the algorithm API endpoint.
 
@@ -173,13 +250,14 @@ def data_product_query(
         Start of MET filter.
     met_end : Optional[str]
         End of MET filter.
-    insert_time_start : Optional[str]
-        Start of insert_time filter.
-    insert_time_end : Optional[str]
-        End of insert_time filter.
-    product_name : Optional[str]
-        Filter on product name. If ending with '*', the backend treats it
-        as a prefix search.
+    met_in_utc_start : Optional[str]
+        Start of utc_time filter.
+    met_in_utc_end : Optional[str]
+        End of utc_time filter.
+    last_modified_start : Optional[str]
+        Start of last modified filter.
+    last_modified_end : Optional[str]
+        End of last modified filter.
 
     Returns
     -------
@@ -191,15 +269,17 @@ def data_product_query(
         query_params["met_start"] = met_start
     if met_end is not None:
         query_params["met_end"] = met_end
-    if insert_time_start is not None:
-        query_params["insert_time_start"] = insert_time_start
-    if insert_time_end is not None:
-        query_params["insert_time_end"] = insert_time_end
-    if product_name is not None:
-        query_params["product_name"] = product_name
+    if met_in_utc_start is not None:
+        query_params["met_in_utc_start"] = met_in_utc_start
+    if met_in_utc_end is not None:
+        query_params["met_in_utc_end"] = met_in_utc_end
+    if last_modified_start is not None:
+        query_params["last_modified_start"] = last_modified_start
+    if last_modified_end is not None:
+        query_params["last_modified_end"] = last_modified_end
 
     url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
-    url += f"/ialirt-db-query/query?{urlencode(query_params)}"
+    url += f"/ialirt-db-query?{urlencode(query_params)}"
 
     logger.info("Algorithm query: GET %s", url)
     request = urllib.request.Request(url, method="GET")
