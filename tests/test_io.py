@@ -151,7 +151,7 @@ def test_data_product_query(mock_urlopen: unittest.mock.MagicMock):
         "met_end": "130",
     }
     # Test that data_product_query retrieves, decodes, and returns the JSON data
-    expected_response = [{"result": "data"}]
+    expected_response = [{"last_modified": "2025-06-19T21:30:00Z"}]
     _set_mock_data(mock_urlopen, json.dumps(expected_response).encode("utf-8"))
 
     response = ialirt_data_access.data_product_query(met_start="100", met_end="130")
