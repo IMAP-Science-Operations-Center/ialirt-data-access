@@ -276,7 +276,8 @@ def main():
         "--downloads_dir",
         type=Path,
         required=False,
-        help="Example: /path/to/downloads/dir",
+        help="Directory to save the output file. Example: /path/to/downloads/dir. "
+        "Default is the user's Downloads folder.",
     )
     db_query_parser.set_defaults(func=_data_product_query_parser)
 
