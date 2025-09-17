@@ -19,7 +19,7 @@ __version__ = "0.2.0"
 
 config = {
     "DATA_ACCESS_URL": os.getenv("IALIRT_DATA_ACCESS_URL")
-    or "https://ialirt.dev.imap-mission.com",
+    or "https://ialirt.imap-mission.com",
 }
 """Settings configuration dictionary.
 

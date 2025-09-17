@@ -72,7 +72,36 @@ results = ialirt_data_access.log_query(year="2024", doy="045", instance="1")
 To change the default URL that the package accesses, you can set
 the environment variable ``IALIRT_DATA_ACCESS_URL`` or within the
 package ``ialirt_data_access.config["DATA_ACCESS_URL"]``. The default
-is the development server ``https://ialirt.dev.imap-mission.com``.
+is the production server ``https://ialirt.imap-mission.com``.
+
+
+### Automated use with API Keys
+
+The default for the CLI is to use the public endpoints.
+To access some unreleased data products and quicklooks, you may
+need elevated permissions. To programmatically get that, you need
+an API Key, which can be requested from the SDC team.
+
+To use the API Key you can set environment variables and then use
+the tool as usual. Note that the api endpoints are prefixed with `/api-key`
+to request unreleased data. This will also require an update to the
+data access url. So the following should be used when programatically
+accessing the data.
+
+```bash
+IMAP_API_KEY=<your-api-key> IALIRT_DATA_ACCESS_URL=https://ialirt.imap-mission.com/api-key ialirt-data-access ...
+```
+
+or with CLI flags
+
+```bash
+ialirt-data-access --api-key <your-api-key> --url https://ialirt.imap-mission.com/api-key ...
+```
+
+Example:
+```bash
+ialirt-data-access --api-key <api_key> --url https://ialirt.imap-mission.com/api-key ialirt-db-query --met_start 100
+```
 
 ## Troubleshooting
 
