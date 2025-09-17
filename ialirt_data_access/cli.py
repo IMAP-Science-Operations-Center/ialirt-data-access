@@ -155,8 +155,14 @@ def main():
         "The default is https://ialirt.dev.imap-mission.com. This can also be "
         "set using the IALIRT_DATA_ACCESS_URL environment variable."
     )
+    api_key_help = (
+        "API key to authenticate with the IMAP SDC. "
+        "This can also be set using the IMAP_API_KEY environment variable. "
+        "It is only necessary for uploading files."
+    )
 
     parser = argparse.ArgumentParser(prog="ialirt-data-access")
+    parser.add_argument("--api-key", type=str, required=False, help=api_key_help)
     parser.add_argument(
         "--version",
         action="version",
@@ -288,6 +294,10 @@ def main():
     if args.url:
         # Explicit url from the command line
         ialirt_data_access.config["DATA_ACCESS_URL"] = args.url
+
+    if args.api_key:
+        # We got an explicit api key from the command line
+        ialirt_data_access.config["API_KEY"] = args.api_key
 
     args.func(args)
 
