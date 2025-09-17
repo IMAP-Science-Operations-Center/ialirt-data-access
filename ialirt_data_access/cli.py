@@ -158,7 +158,6 @@ def main():
     api_key_help = (
         "API key to authenticate with the IMAP SDC. "
         "This can also be set using the IMAP_API_KEY environment variable. "
-        "It is only necessary for uploading files."
     )
 
     parser = argparse.ArgumentParser(prog="ialirt-data-access")
