@@ -28,6 +28,10 @@ def _get_url_response(request: urllib.request.Request):
     the different types of errors that can occur when
     opening a URL and write out the response body.
     """
+    api_key = ialirt_data_access.config.get("API_KEY")
+    if api_key:
+        request.headers["x-api-key"] = api_key
+
     try:
         # Open the URL and yield the response
         with urllib.request.urlopen(request) as response:
