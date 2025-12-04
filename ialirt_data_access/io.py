@@ -227,14 +227,13 @@ def download(
     return destination
 
 
-def data_product_query(  # noqa: PLR0913
+def data_product_query(
     *,
-    met_start: Optional[str] = None,
-    met_end: Optional[str] = None,
+    instrument: Optional[str] = None,
+    time_utc_start: Optional[str] = None,
+    time_utc_end: Optional[str] = None,
     met_in_utc_start: Optional[str] = None,
     met_in_utc_end: Optional[str] = None,
-    last_modified_start: Optional[str] = None,
-    last_modified_end: Optional[str] = None,
 ) -> list:
     """Query the algorithm API endpoint.
 
@@ -242,26 +241,26 @@ def data_product_query(  # noqa: PLR0913
     `ialirt_data_access.config` and sends a GET request with the provided
     query parameters. For example, calling:
 
-        data_product_query(met_start="100")
+        data_product_query(instrument="mag", time_utc_start="2025-11-22T05:30:00")
 
     will send a GET request to:
 
-        https://ialirt.dev.imap-mission.com/ialirt-db-query/query?met_start=100
+        https://ialirt.imap-mission.com/api-key/space-weather?instrument=mag&time_utc_start=2025-11-22T05:30:00
 
     Parameters
     ----------
-    met_start : Optional[str]
-        Start of MET filter.
-    met_end : Optional[str]
-        End of MET filter.
+    instrument : Optional[str]
+        Instrument to query. Options include:
+        "hit", "mag", "codice_lo", "codice_hi", "swapi", "swe",
+        "spice", "<instrument>hk", "spacecraft".
+    time_utc_start : Optional[str]
+        Start of utc_time filter.
+    time_utc_end : Optional[str]
+        End of utc_time filter.
     met_in_utc_start : Optional[str]
         Start of utc_time filter.
     met_in_utc_end : Optional[str]
         End of utc_time filter.
-    last_modified_start : Optional[str]
-        Start of last modified filter.
-    last_modified_end : Optional[str]
-        End of last modified filter.
 
     Returns
     -------
@@ -269,21 +268,19 @@ def data_product_query(  # noqa: PLR0913
         List of items returned by the algorithm query endpoint.
     """
     query_params = {}
-    if met_start is not None:
-        query_params["met_start"] = met_start
-    if met_end is not None:
-        query_params["met_end"] = met_end
+    if instrument is not None:
+        query_params["instrument"] = instrument
+    if time_utc_start is not None:
+        query_params["time_utc_start"] = time_utc_start
+    if time_utc_end is not None:
+        query_params["time_utc_end"] = time_utc_end
     if met_in_utc_start is not None:
         query_params["met_in_utc_start"] = met_in_utc_start
     if met_in_utc_end is not None:
         query_params["met_in_utc_end"] = met_in_utc_end
-    if last_modified_start is not None:
-        query_params["last_modified_start"] = last_modified_start
-    if last_modified_end is not None:
-        query_params["last_modified_end"] = last_modified_end
 
     url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
-    url += f"/ialirt-db-query?{urlencode(query_params)}"
+    url += f"/space-weather?{urlencode(query_params)}"
 
     logger.info("Algorithm query: GET %s", url)
     request = urllib.request.Request(url, method="GET")
@@ -291,9 +288,5 @@ def data_product_query(  # noqa: PLR0913
         items = response.read().decode("utf-8")
         logger.debug("Algorithm query response: %s", items)
         items = json.loads(items)
-
-    if items:
-        max_last_modified = max(item["last_modified"] for item in items)
-        logger.info("Maximum last_modified: %s", max_last_modified)
 
     return items
