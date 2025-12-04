@@ -132,7 +132,7 @@ ialirt-data-access --api-key <api_key> --url https://ialirt.imap-mission.com/api
 ```
 An equivalent curl command would be:
 ```bash
-curl -H "x-api-key: $IALIRT_API_KEY" "https://ialirt.imap-mission.com/api-key/space-weather?instrument=mag"
+$ curl -H "x-api-key: $IALIRT_API_KEY" "https://ialirt.imap-mission.com/api-key/space-weather?instrument=mag"
 ```
 
 ## Troubleshooting
