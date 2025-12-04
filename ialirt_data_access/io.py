@@ -252,7 +252,7 @@ def data_product_query(
     instrument : Optional[str]
         Instrument to query. Options include:
         "hit", "mag", "codice_lo", "codice_hi", "swapi", "swe",
-        "spice", "<instrument>hk", "spacecraft".
+        "spice", "<instrument>_hk", "spacecraft".
     time_utc_start : Optional[str]
         Start of utc_time filter.
     time_utc_end : Optional[str]
