@@ -239,9 +239,9 @@ def main():
     download_parser.add_argument(
         "--filetype",
         type=str,
-        choices=["logs", "packets", "archive"],
+        choices=["logs", "packets", "archive", "coverage", "realtime"],
         required=True,
-        help="Filetype: logs, packets, or archive",
+        help="Filetype: logs, packets, archive, coverage, or realtime.",
     )
     download_parser.add_argument(
         "--downloads_dir",
