@@ -12,8 +12,8 @@ Usage:
     ialirt-data-access --debug --url <url> ialirt-download
     --filename <filename> --downloads_dir <downloads_dir>
 
-    ialirt-data-access --debug --url <url> ialirt-db-query
-    --met_start <met_start> --met_end <met_end>
+    ialirt-data-access --debug --url <url> space-weather
+    --time_utc_start <time_utc_start> --time_utc_end <time_utc_end>
 """
 
 import argparse
@@ -116,12 +116,11 @@ def _data_product_query_parser(args: argparse.Namespace):
     None
     """
     query_params = {
-        "met_start": args.met_start,
-        "met_end": args.met_end,
+        "instrument": args.instrument,
+        "time_utc_start": args.time_utc_start,
+        "time_utc_end": args.time_utc_end,
         "met_in_utc_start": args.met_in_utc_start,
         "met_in_utc_end": args.met_in_utc_end,
-        "last_modified_start": args.last_modified_start,
-        "last_modified_end": args.last_modified_end,
     }
     # Remove any keys with None values.
     query_params = {k: v for k, v in query_params.items() if v is not None}
@@ -152,7 +151,7 @@ def main():
     """
     url_help = (
         "URL of the IALIRT API. "
-        "The default is https://ialirt.dev.imap-mission.com. This can also be "
+        "The default is https://ialirt.imap-mission.com. This can also be "
         "set using the IALIRT_DATA_ACCESS_URL environment variable."
     )
     api_key_help = (
@@ -252,30 +251,38 @@ def main():
     download_parser.set_defaults(func=_download_parser)
 
     # Query DB command
-    db_query_parser = subparsers.add_parser("ialirt-db-query")
+    db_query_parser = subparsers.add_parser("space-weather")
     db_query_parser.add_argument(
-        "--met_start", type=int, required=False, help="Start of mission elapsed time."
-    )
-    db_query_parser.add_argument(
-        "--met_end", type=int, required=False, help="End of mission elapsed time."
-    )
-    db_query_parser.add_argument(
-        "--met_in_utc_start", type=str, required=False, help="Start of met time in utc."
-    )
-    db_query_parser.add_argument(
-        "--met_in_utc_end", type=str, required=False, help="End of met time in utc."
-    )
-    db_query_parser.add_argument(
-        "--last_modified_start",
+        "--instrument",
         type=str,
         required=False,
-        help="Start of last_modified time.",
+        help="Instrument. Options include: hit, mag, "
+        "codice_lo, codice_hi, swapi, swe, spice, "
+        "<instrument>_hk, spacecraft.",
     )
     db_query_parser.add_argument(
-        "--last_modified_end",
+        "--time_utc_start",
         type=str,
         required=False,
-        help="End of last_modified time.",
+        help="Start of mission elapsed time e.g., 2025-11-22T05:30:00).",
+    )
+    db_query_parser.add_argument(
+        "--time_utc_end",
+        type=str,
+        required=False,
+        help="End of mission elapsed time e.g., 2025-11-22T05:30:00).",
+    )
+    db_query_parser.add_argument(
+        "--met_in_utc_start",
+        type=str,
+        required=False,
+        help="Start of met time in utc e.g., 2025-11-22T05:30:00).",
+    )
+    db_query_parser.add_argument(
+        "--met_in_utc_end",
+        type=str,
+        required=False,
+        help="End of met time in utc e.g., 2025-11-22T05:30:00).",
     )
     db_query_parser.add_argument(
         "--downloads_dir",

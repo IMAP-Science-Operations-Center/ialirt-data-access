@@ -147,14 +147,16 @@ def test_download_already_exists(mock_urlopen: unittest.mock.MagicMock, tmp_path
 def test_data_product_query(mock_urlopen: unittest.mock.MagicMock):
     """Test a call to the data product query API with multiple query parameters."""
     query_params = {
-        "met_start": "100",
-        "met_end": "130",
+        "time_utc_start": "2025-11-22T05:30:00",
+        "time_utc_end": "2025-11-23T05:30:00",
     }
     # Test that data_product_query retrieves, decodes, and returns the JSON data
     expected_response = [{"last_modified": "2025-06-19T21:30:00Z"}]
     _set_mock_data(mock_urlopen, json.dumps(expected_response).encode("utf-8"))
 
-    response = ialirt_data_access.data_product_query(met_start="100", met_end="130")
+    response = ialirt_data_access.data_product_query(
+        time_utc_start="2025-11-22T05:30:00", time_utc_end="2025-11-23T05:30:00"
+    )
     assert response == expected_response
 
     # Should have only been one call to urlopen
@@ -162,5 +164,5 @@ def test_data_product_query(mock_urlopen: unittest.mock.MagicMock):
 
     urlopen_call = mock_urlopen.mock_calls[0].args[0]
     expected_query = urlencode(query_params)
-    expected_url = f"https://ialirt.test.com/ialirt-db-query?{expected_query}"
+    expected_url = f"https://ialirt.test.com/space-weather?{expected_query}"
     assert urlopen_call.full_url == expected_url

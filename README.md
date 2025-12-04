@@ -38,23 +38,51 @@ $ ialirt-data-access --url <url> ialirt-download --filetype <filetype> --filenam
 ### Query the database
 
 Query the database for a given time. Examples shown below.
+Valid --instrument values include:
+
+- hit
+- mag
+- codice_lo
+- codice_hi
+- swapi
+- swe
+- spice               (metadata about kernels)
+- spacecraft          (IMAP ephemeris state vectors)
+- <instrument>_hk     (housekeeping telemetry)
+
+If omitted, the query returns science instruments for the selected time range.
 
 ```bash
-$ ialirt-data-access --url <url> ialirt-db-query --met_in_utc_start <met_in_utc_start> --met_in_utc_end <met_in_utc_end>
+$ ialirt-data-access --url <url> space-weather --met_in_utc_start <met_in_utc_start> --met_in_utc_end <met_in_utc_end>
 ```
-or
+or to query 1 hr from a start time
 ```bash
-$ ialirt-data-access --url <url> ialirt-db-query --met_start <met_start> --met_end <met_end>
+$ ialirt-data-access --url <url> space-weather --time_utc_start <time_utc_start>
 ```
-or
+or to query the past 1 hr from an end time
 ```bash
-$ ialirt-data-access --url <url> ialirt-db-query --last_modified_start <last_modified_start> --last_modified_end <last_modified_end>
+$ ialirt-data-access --url <url> space-weather --time_utc_end <time_utc_end>
 ```
-or to return all data from met_start onward
+or to query a specific instrument within the past hour
 ```bash
-$ ialirt-data-access --url <url> ialirt-db-query --met_start <met_start>
+$ ialirt-data-access --url <url> space-weather --instrument <instrument>
 ```
-
+or to query spice metadata
+```bash
+$ ialirt-data-access --url <url> space-weather --instrument spice
+```
+or to query housekeeping for a specific instrument
+```bash
+$ ialirt-data-access --url <url> space-weather --instrument <instrument>_hk
+```
+or to query imap spacecraft position and velocity
+```bash
+$ ialirt-data-access --url <url> space-weather --instrument spacecraft
+```
+an equivalent curl command would be
+```bash
+$ curl "https://ialirt.imap-mission.com/space-weather?instrument=mag&time_utc_start=2025-11-22T05:30:00&time_utc_end=2025-11-22T08:30:00"
+```
 
 ## Importing as a package
 
@@ -100,7 +128,11 @@ ialirt-data-access --api-key <your-api-key> --url https://ialirt.imap-mission.co
 
 Example:
 ```bash
-ialirt-data-access --api-key <api_key> --url https://ialirt.imap-mission.com/api-key ialirt-db-query --met_start 100
+ialirt-data-access --api-key <api_key> --url https://ialirt.imap-mission.com/api-key space-weather --instrument <instrument>
+```
+An equivalent curl command would be:
+```bash
+$ curl -H "x-api-key: $IALIRT_API_KEY" "https://ialirt.imap-mission.com/api-key/space-weather?instrument=mag"
 ```
 
 ## Troubleshooting
