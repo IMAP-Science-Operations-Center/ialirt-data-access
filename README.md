@@ -12,7 +12,7 @@ If you are interested in contributing to the project, welcome! Please start here
 
 ### Asking questions
 
-If you have any questions about using I-ALiRT that are not covered by the existing documentation, you can open a (question-type Issue)[https://github.com/IMAP-Science-Operations-Center/ialirt-data-access/issues/new/choose]. Before you open a new issue, please search through the existing answered questions and documentation to see if your question has already been answered.
+If you have any questions about using I-ALiRT that are not covered by the existing documentation, you can open a [question-type Issue](https://github.com/IMAP-Science-Operations-Center/ialirt-data-access/issues/new/choose). Before you open a new issue, please search through the existing answered questions and documentation to see if your question has already been answered.
 
 ### Feature requests
 
