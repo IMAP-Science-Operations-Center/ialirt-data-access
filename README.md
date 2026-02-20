@@ -1,6 +1,28 @@
-# I-ALiRT Data Access Package
+# Welcome to I-ALiRT Data Access!
+
+This page provides lightweight Python tools to allow users to query and access I-ALiRT data.
+
+It also serves as a central location for I-ALiRT data feature requests or bug reports, through the "Issues" pages.
+
+The I-ALiRT team welcomes any and all discussions or contributions! If you have any questions, comments, requests, or anything else, please do open an issue. If you have thoughts on an existing issue or pull request, we welcome comments and discussion everywhere.
+
+If you are interested in contributing to the project, welcome! Please start here.
+
+## Contacting the I-ALiRT Team
+
+### Asking questions
+
+If you have any questions about using I-ALiRT that are not covered by the existing documentation, you can open a question-type Issue. Before you open a new issue, please search through the existing answered questions and documentation to see if your question has already been answered
+
+### Feature requests
+
+For new feature requests, you can open a "feature request" ticket for I-ALiRT. Please fill out with as much detail as you can. Please also do a search through existing tickets to see if an existing ticket already
 
 This lightweight Python package allows users to query the I-ALiRT database and list/download files from S3.
+
+### Contributions
+
+The I-ALiRT project welcomes contributions! To contribute, please consult the IMAP [Contribution guide](https://imap-processing.readthedocs.io/en/latest/development/index.html). All IMAP repositories follow these standards.
 
 ## Command Line Utility
 
@@ -46,40 +68,54 @@ Valid --instrument values include:
 - codice_hi
 - swapi
 - swe
-- spice               (metadata about kernels)
-- spacecraft          (IMAP ephemeris state vectors)
-- <instrument>_hk     (housekeeping telemetry)
+- spice (metadata about kernels)
+- spacecraft (IMAP ephemeris state vectors)
+- <instrument>\_hk (housekeeping telemetry)
 
 If omitted, the query returns science instruments for the selected time range.
 
 ```bash
 $ ialirt-data-access --url <url> space-weather --met_in_utc_start <met_in_utc_start> --met_in_utc_end <met_in_utc_end>
 ```
+
 or to query 1 hr from a start time
+
 ```bash
 $ ialirt-data-access --url <url> space-weather --time_utc_start <time_utc_start>
 ```
+
 or to query the past 1 hr from an end time
+
 ```bash
 $ ialirt-data-access --url <url> space-weather --time_utc_end <time_utc_end>
 ```
+
 or to query a specific instrument within the past hour
+
 ```bash
 $ ialirt-data-access --url <url> space-weather --instrument <instrument>
 ```
+
 or to query spice metadata
+
 ```bash
 $ ialirt-data-access --url <url> space-weather --instrument spice
 ```
+
 or to query housekeeping for a specific instrument
+
 ```bash
 $ ialirt-data-access --url <url> space-weather --instrument <instrument>_hk
 ```
+
 or to query imap spacecraft position and velocity
+
 ```bash
 $ ialirt-data-access --url <url> space-weather --instrument spacecraft
 ```
+
 an equivalent curl command would be
+
 ```bash
 $ curl "https://ialirt.imap-mission.com/space-weather?instrument=mag&time_utc_start=2025-11-22T05:30:00&time_utc_end=2025-11-22T08:30:00"
 ```
@@ -98,10 +134,9 @@ results = ialirt_data_access.log_query(year="2024", doy="045", instance="1")
 ### Data Access URL
 
 To change the default URL that the package accesses, you can set
-the environment variable ``IALIRT_DATA_ACCESS_URL`` or within the
-package ``ialirt_data_access.config["DATA_ACCESS_URL"]``. The default
-is the production server ``https://ialirt.imap-mission.com``.
-
+the environment variable `IALIRT_DATA_ACCESS_URL` or within the
+package `ialirt_data_access.config["DATA_ACCESS_URL"]`. The default
+is the production server `https://ialirt.imap-mission.com`.
 
 ### Automated use with API Keys
 
@@ -127,45 +162,17 @@ ialirt-data-access --api-key <your-api-key> --url https://ialirt.imap-mission.co
 ```
 
 Example:
+
 ```bash
 ialirt-data-access --api-key <api_key> --url https://ialirt.imap-mission.com/api-key space-weather --instrument <instrument>
 ```
+
 An equivalent curl command would be:
+
 ```bash
 $ curl -H "x-api-key: $IALIRT_API_KEY" "https://ialirt.imap-mission.com/api-key/space-weather?instrument=mag"
 ```
 
 ## Troubleshooting
 
-### Network issues
-
-#### SSL
-
-If you encounter SSL errors similar to the following:
-
-```text
-urllib.error.URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:997)>
-```
-
-That generally means the Python environment you're using is not finding your system's root
-certificates properly. This means you need to tell Python how to find those certificates
-with the following potential solutions.
-
-1. **Upgrade the certifi package**
-
-    ```bash
-    pip install --upgrade certifi
-    ```
-
-2. **Install system certificates**
-    Depending on the Python version you installed the program with the command will look something like this:
-
-    ```bash
-    /Applications/Python\ 3.10/Install\ Certificates.command
-    ```
-
-#### HTTP Error 502: Bad Gateway
-
-This could mean that the service is temporarily down. If you
-continue to encounter this, reach out to the IMAP SDC at
-<imap-sdc@lasp.colorado.edu>.
+For troubleshooting support, go to [this page.](/docs/troubleshooting.md)
