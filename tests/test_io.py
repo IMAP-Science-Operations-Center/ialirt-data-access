@@ -144,6 +144,35 @@ def test_download_already_exists(mock_urlopen: unittest.mock.MagicMock, tmp_path
     assert mock_urlopen.call_count == 0
 
 
+def test_archive_query(mock_urlopen: unittest.mock.MagicMock):
+    """Test a basic call to the Archive Query API."""
+    filename = "imap_ialirt_l1_realtime_20240521_v001.cdf"
+    query_params = {"year": "2024", "month": "05", "day": "21", "version": "1"}
+    _set_mock_data(mock_urlopen, json.dumps([filename]).encode("utf-8"))
+
+    response = ialirt_data_access.archive_query(**query_params)
+    assert response == [filename]
+
+    mock_urlopen.assert_called_once()
+    urlopen_call = mock_urlopen.mock_calls[0].args[0]
+    called_url = urlopen_call.full_url
+    expected_url_encoded = (
+        f"https://ialirt.test.com/ialirt-archive-query?{urlencode(query_params)}"
+    )
+    assert called_url == expected_url_encoded
+
+
+def test_archive_query_invalid_date_order(mock_urlopen: unittest.mock.MagicMock):
+    """Test that archive_query raises ValueError for out-of-order date parts."""
+    with pytest.raises(ValueError, match="Date parts must be specified in order"):
+        ialirt_data_access.archive_query(month="05")
+
+    with pytest.raises(ValueError, match="Date parts must be specified in order"):
+        ialirt_data_access.archive_query(day="21")
+
+    assert mock_urlopen.call_count == 0
+
+
 def test_data_product_query(mock_urlopen: unittest.mock.MagicMock):
     """Test a call to the data product query API with multiple query parameters."""
     query_params = {

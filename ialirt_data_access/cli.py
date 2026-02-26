@@ -9,6 +9,9 @@ Usage:
     ialirt-data-access --url <url> ialirt-packet-query
     --year 2025 --doy 148 --hh 16 --mm 24
 
+    ialirt-data-access --url <url> ialirt-archive-query
+    --year 2024 --month 05 --day 21 --version 1
+
     ialirt-data-access --debug --url <url> ialirt-download
     --filename <filename> --downloads_dir <downloads_dir>
 
@@ -93,6 +96,38 @@ def _packet_query_parser(args: argparse.Namespace):
     query_params = {k: v for k, v in query_params.items() if v is not None}
     try:
         query_results = ialirt_data_access.packet_query(**query_params)
+        logger.info("Query results: %s", query_results)
+        print(query_results)
+    except ialirt_data_access.io.IALIRTDataAccessError as e:
+        logger.error("An error occurred: %s", e)
+        print(e)
+    except ValueError as e:
+        logger.error("Invalid input: %s", e)
+        print(e)
+
+
+def _archive_query_parser(args: argparse.Namespace):
+    """Query the I-ALiRT archive API.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed arguments including year, month, day, version.
+
+    Returns
+    -------
+    None
+    """
+    query_params = {
+        "year": args.year,
+        "month": args.month,
+        "day": args.day,
+        "version": args.version,
+    }
+    # Remove any keys with None values.
+    query_params = {k: v for k, v in query_params.items() if v is not None}
+    try:
+        query_results = ialirt_data_access.archive_query(**query_params)
         logger.info("Query results: %s", query_results)
         print(query_results)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
@@ -226,6 +261,32 @@ def main():
         "--ss", type=str, required=False, help="Second (0 to 59)."
     )
     packet_query_parser.set_defaults(func=_packet_query_parser)
+
+    # Archive query command
+    archive_query_parser = subparsers.add_parser("ialirt-archive-query")
+    archive_query_parser.add_argument(
+        "--year", type=str, required=False, help="Year (e.g., 2024)."
+    )
+    archive_query_parser.add_argument(
+        "--month",
+        type=str,
+        required=False,
+        help="Month (e.g., 05). Requires --year.",
+    )
+    archive_query_parser.add_argument(
+        "--day",
+        type=str,
+        required=False,
+        help="Day of month (e.g., 21). Requires --month.",
+    )
+    archive_query_parser.add_argument(
+        "--version",
+        type=str,
+        required=False,
+        default="1",
+        help="File version number (default: 1).",
+    )
+    archive_query_parser.set_defaults(func=_archive_query_parser)
 
     # Download command
     download_parser = subparsers.add_parser("ialirt-download")

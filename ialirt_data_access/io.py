@@ -227,6 +227,62 @@ def download(
     return destination
 
 
+def archive_query(
+    *,
+    year: Optional[str] = None,
+    month: Optional[str] = None,
+    day: Optional[str] = None,
+    version: Optional[str] = "1",
+) -> list[str]:
+    """Query the I-ALiRT archive CDF files by date.
+
+    Parameters
+    ----------
+    year : str, optional
+        Year, e.g., '2024'.
+    month : str, optional
+        Month, e.g., '05'. Requires year.
+    day : str, optional
+        Day of month, e.g., '21'. Requires month.
+    version : str, optional
+        File version number, defaults to '1'.
+
+    Returns
+    -------
+    list of str
+        Matching archive CDF file names.
+
+    Raises
+    ------
+    ValueError
+        If date parts are not specified in order (year, month, day).
+    """
+    if (day and not month) or (month and not year):
+        raise ValueError("Date parts must be specified in order: year, month, day.")
+
+    query_params: dict = {}
+    if year is not None:
+        query_params["year"] = year
+    if month is not None:
+        query_params["month"] = month
+    if day is not None:
+        query_params["day"] = day
+    if version is not None:
+        query_params["version"] = version
+
+    url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
+    url += f"/ialirt-archive-query?{urlencode(query_params)}"
+
+    logger.info("Querying archive for %s with url %s", query_params, url)
+    request = urllib.request.Request(url, method="GET")
+    with _get_url_response(request) as response:
+        items = response.read().decode("utf-8")
+        logger.debug("Archive query response: %s", items)
+        items = json.loads(items)
+
+    return items
+
+
 def data_product_query(
     *,
     instrument: Optional[str] = None,

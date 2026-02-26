@@ -49,6 +49,20 @@ Find all files from a given year, day of year, hour, minute, and second.
 $ ialirt-data-access --url <url> ialirt-packet-query --year <year> --doy <doy> [--hh <hour>] [--mm <minute>] [--ss <second>]
 ```
 
+### Query / Search for archive CDF files
+
+Find all archive CDF files, optionally filtered by year, month, and day. All parameters are optional; version defaults to 1.
+
+```bash
+$ ialirt-data-access --url <url> ialirt-archive-query [--year <year>] [--month <month>] [--day <day>] [--version <version>]
+```
+
+An equivalent curl command is shown.
+
+```bash
+$ curl "https://ialirt.imap-mission.com/ialirt-archive-query?year=2024&month=05&day=21&version=1"
+```
+
 ### Download from S3
 
 Download a file and place it in the Downloads/<filetype> directory by default, or optionally specify another location using --downloads_dir. Valid filetype options include: logs, packets, archive.
