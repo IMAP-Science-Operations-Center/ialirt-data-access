@@ -57,6 +57,18 @@ Download a file and place it in the Downloads/<filetype> directory by default, o
 $ ialirt-data-access --url <url> ialirt-download --filetype <filetype> --filename <filename>
 ```
 
+An example of how to download a cdf file from the archive directory is shown.
+
+```bash
+$ ialirt-data-access --url https://ialirt.imap-mission.com ialirt-download --filetype archive --filename imap_ialirt_l1_realtime_<yyyymmdd>_v<NNN>.cdf
+```
+
+An equivalent curl command is shown.
+
+```bash
+$ curl -L -O "https://ialirt.imap-mission.com/ialirt-download/archive/imap_ialirt_l1_realtime_<yyyymmdd>_v<NNN>.cdf"
+```
+
 ### Query the database
 
 Query the database for a given time. Examples shown below.
