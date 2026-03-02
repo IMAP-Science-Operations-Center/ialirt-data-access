@@ -192,7 +192,7 @@ def test_archive_query_since(mock_urlopen: unittest.mock.MagicMock):
 
 
 def test_archive_query_since_with_date_parts(mock_urlopen: unittest.mock.MagicMock):
-    """Test that archive_query raises ValueError when since is combined with date parts."""
+    """Test that archive_query raises ValueError when since is combined with date."""
     with pytest.raises(ValueError, match="since cannot be combined with"):
         ialirt_data_access.archive_query(since="20240521", year="2024")
 
