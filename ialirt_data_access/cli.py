@@ -12,6 +12,9 @@ Usage:
     ialirt-data-access --url <url> ialirt-archive-query
     --year 2024 --month 05 --day 21 --version 1
 
+    ialirt-data-access --url <url> ialirt-archive-query
+    --since 20240521 --version 1
+
     ialirt-data-access --debug --url <url> ialirt-download
     --filename <filename> --downloads_dir <downloads_dir>
 
@@ -123,6 +126,7 @@ def _archive_query_parser(args: argparse.Namespace):
         "month": args.month,
         "day": args.day,
         "version": args.version,
+        "since": args.since,
     }
     # Remove any keys with None values.
     query_params = {k: v for k, v in query_params.items() if v is not None}
@@ -285,6 +289,13 @@ def main():
         required=False,
         default="1",
         help="File version number (default: 1).",
+    )
+    archive_query_parser.add_argument(
+        "--since",
+        type=str,
+        required=False,
+        help="Return files on or after this date. Format: YYYYMMDD (e.g., 20240521). "
+        "Cannot be combined with --year, --month, or --day.",
     )
     archive_query_parser.set_defaults(func=_archive_query_parser)
 
