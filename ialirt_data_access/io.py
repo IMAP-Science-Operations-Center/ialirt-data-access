@@ -132,7 +132,7 @@ def log_query(*, year: str, doy: str, instance: str) -> list[str]:
     return items
 
 
-def packet_query(
+def packet_query(  # noqa: PLR0913
     *,
     year: Optional[str] = None,
     doy: Optional[str] = None,
@@ -176,7 +176,8 @@ def packet_query(
     list of str
         Matching packet file names.
     """
-    utc_params = {k: v for k, v in {"time_utc_start": time_utc_start, "time_utc_end": time_utc_end}.items() if v is not None}
+    utc_params = {k: v for k, v in {"time_utc_start": time_utc_start,
+                                    "time_utc_end": time_utc_end}.items() if v is not None}
 
     if utc_params:
         query_params: dict = {"time_utc_start": time_utc_start}
