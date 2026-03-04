@@ -87,6 +87,44 @@ def test_packet_query(mock_urlopen: unittest.mock.MagicMock):
     assert called_url == expected_url_encoded
 
 
+def test_packet_query_utc_range(mock_urlopen: unittest.mock.MagicMock):
+    """Test packet_query in UTC range mode."""
+    filename = "iois_1_packets_2025_302_18_55_02"
+    _set_mock_data(mock_urlopen, json.dumps([filename]).encode("utf-8"))
+
+    response = ialirt_data_access.packet_query(
+        time_utc_start="2025-10-29T18:55:02",
+        time_utc_end="2025-10-29T19:05:00",
+    )
+    assert response == [filename]
+
+    mock_urlopen.assert_called_once()
+    urlopen_call = mock_urlopen.mock_calls[0].args[0]
+    called_url = urlopen_call.full_url
+    expected_url_encoded = "https://ialirt.test.com/ialirt-packet-query?" + urlencode(
+        {
+            "time_utc_start": "2025-10-29T18:55:02",
+            "time_utc_end": "2025-10-29T19:05:00",
+        }
+    )
+    assert called_url == expected_url_encoded
+
+
+def test_packet_query_utc_start_only(mock_urlopen: unittest.mock.MagicMock):
+    """Test packet_query in UTC range mode with only time_utc_start."""
+    filename = "iois_1_packets_2025_302_18_55_02"
+    _set_mock_data(mock_urlopen, json.dumps([filename]).encode("utf-8"))
+
+    response = ialirt_data_access.packet_query(time_utc_start="2025-10-29T18:55:02")
+    assert response == [filename]
+
+    urlopen_call = mock_urlopen.mock_calls[0].args[0]
+    expected_url_encoded = "https://ialirt.test.com/ialirt-packet-query?" + urlencode(
+        {"time_utc_start": "2025-10-29T18:55:02"}
+    )
+    assert urlopen_call.full_url == expected_url_encoded
+
+
 def test_query_bad_params(mock_urlopen: unittest.mock.MagicMock):
     """Test a call to the Query API that has invalid parameters."""
     with pytest.raises(

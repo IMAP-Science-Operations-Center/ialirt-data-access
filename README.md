@@ -43,10 +43,18 @@ $ ialirt-data-access --url <url> ialirt-log-query --year <year> --doy <doy> --in
 
 ### Query / Search for packets
 
-Find all files from a given year, day of year, hour, minute, and second.
+Two mutually exclusive query modes are supported.
+
+**Individual params mode** — query by partial datetime (year and doy required):
 
 ```bash
 $ ialirt-data-access --url <url> ialirt-packet-query --year <year> --doy <doy> [--hh <hour>] [--mm <minute>] [--ss <second>]
+```
+
+**UTC range mode** — query by ISO 8601 time range (time_utc_start required):
+
+```bash
+$ ialirt-data-access --url <url> ialirt-packet-query --time_utc_start <YYYY-MM-DDTHH:MM:SS> [--time_utc_end <YYYY-MM-DDTHH:MM:SS>]
 ```
 
 ### Query / Search for archive CDF files

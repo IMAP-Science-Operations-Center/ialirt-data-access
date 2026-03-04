@@ -132,44 +132,72 @@ def log_query(*, year: str, doy: str, instance: str) -> list[str]:
     return items
 
 
-def packet_query(
+def packet_query(  # noqa: PLR0913
     *,
-    year: str,
-    doy: str,
+    year: Optional[str] = None,
+    doy: Optional[str] = None,
     hh: Optional[str] = None,
     mm: Optional[str] = None,
     ss: Optional[str] = None,
+    time_utc_start: Optional[str] = None,
+    time_utc_end: Optional[str] = None,
 ) -> list[str]:
-    """Query the I-ALiRT packet files by partial datetime.
+    """Query the I-ALiRT packet files.
+
+    Two mutually exclusive query modes are supported:
+
+    UTC range mode — strict ISO 8601 format ``YYYY-MM-DDTHH:MM:SS``.
+    ``time_utc_start`` is required; ``time_utc_end`` is optional.
+
+    Individual params mode — partial time specification
+    (``year``, ``doy``[, ``hh``[, ``mm``[, ``ss``]]]).
+    At minimum, ``year`` and ``doy`` must be provided.
 
     Parameters
     ----------
-    year : str
-        Year, e.g., '2025'
-    doy : str
-        Day of year, e.g., '148'
+    year : str, optional
+        Year, e.g., '2025'. Required for individual params mode.
+    doy : str, optional
+        Day of year, e.g., '148'. Required for individual params mode.
     hh : str, optional
-        Hour of day, 0 to 23
+        Hour of day, 0 to 23.
     mm : str, optional
-        Minute, 0 to 59
+        Minute, 0 to 59.
     ss : str, optional
-        Second, 0 to 59
+        Second, 0 to 59.
+    time_utc_start : str, optional
+        Start of UTC time range (ISO 8601, e.g., '2025-10-29T18:55:02').
+        Required for UTC range mode.
+    time_utc_end : str, optional
+        End of UTC time range (ISO 8601). Optional in UTC range mode.
 
     Returns
     -------
     list of str
         Matching packet file names.
     """
-    query_params = {"year": year, "doy": doy}
+    utc_params = {
+        k: v
+        for k, v in {
+            "time_utc_start": time_utc_start,
+            "time_utc_end": time_utc_end,
+        }.items()
+        if v is not None
+    }
 
-    if hh:
-        query_params["hh"] = hh
-    if mm:
-        query_params["mm"] = mm
-    if ss:
-        query_params["ss"] = ss
-
-    _validate_query_params(**query_params)
+    if utc_params:
+        query_params: dict = {"time_utc_start": time_utc_start}
+        if time_utc_end:
+            query_params["time_utc_end"] = time_utc_end
+    else:
+        query_params = {"year": year, "doy": doy}
+        if hh:
+            query_params["hh"] = hh
+        if mm:
+            query_params["mm"] = mm
+        if ss:
+            query_params["ss"] = ss
+        _validate_query_params(**query_params)
 
     url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
     url += f"/ialirt-packet-query?{urlencode(query_params)}"

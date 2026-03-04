@@ -9,6 +9,9 @@ Usage:
     ialirt-data-access --url <url> ialirt-packet-query
     --year 2025 --doy 148 --hh 16 --mm 24
 
+    ialirt-data-access --url <url> ialirt-packet-query
+    --time_utc_start 2025-10-29T18:55:02 --time_utc_end 2025-10-29T19:05:00
+
     ialirt-data-access --url <url> ialirt-archive-query
     --year 2024 --month 05 --day 21 --version 1
 
@@ -82,7 +85,8 @@ def _packet_query_parser(args: argparse.Namespace):
     Parameters
     ----------
     args : argparse.Namespace
-        Parsed arguments including year, doy, hh, mm, ss.
+        Parsed arguments including year, doy, hh, mm, ss,
+        time_utc_start, time_utc_end.
 
     Returns
     -------
@@ -94,6 +98,8 @@ def _packet_query_parser(args: argparse.Namespace):
         "hh": args.hh,
         "mm": args.mm,
         "ss": args.ss,
+        "time_utc_start": args.time_utc_start,
+        "time_utc_end": args.time_utc_end,
     }
     # Remove any keys with None values.
     query_params = {k: v for k, v in query_params.items() if v is not None}
@@ -183,7 +189,7 @@ def _data_product_query_parser(args: argparse.Namespace):
         print(f"Error: {e}")
 
 
-def main():
+def main():  # noqa: PLR0915
     """Parse the command line arguments.
 
     Run the command line interface to the I-ALiRT Data Access API.
@@ -250,10 +256,17 @@ def main():
     # Packet query command
     packet_query_parser = subparsers.add_parser("ialirt-packet-query")
     packet_query_parser.add_argument(
-        "--year", type=str, required=True, help="Year of the packet (e.g., 2025)."
+        "--year",
+        type=str,
+        required=False,
+        help="Year of the packet (e.g., 2025). Required for individual params mode.",
     )
     packet_query_parser.add_argument(
-        "--doy", type=str, required=True, help="Day of year of the packet (e.g., 148)."
+        "--doy",
+        type=str,
+        required=False,
+        help="Day of year of the packet (e.g., 148). "
+        "Required for individual params mode.",
     )
     packet_query_parser.add_argument(
         "--hh", type=str, required=False, help="Hour (0 to 23)."
@@ -263,6 +276,20 @@ def main():
     )
     packet_query_parser.add_argument(
         "--ss", type=str, required=False, help="Second (0 to 59)."
+    )
+    packet_query_parser.add_argument(
+        "--time_utc_start",
+        type=str,
+        required=False,
+        help="Start of UTC time range (ISO 8601, e.g., 2025-10-29T18:55:02). "
+        "Required for UTC range mode.",
+    )
+    packet_query_parser.add_argument(
+        "--time_utc_end",
+        type=str,
+        required=False,
+        help="End of UTC time range (ISO 8601, e.g., 2025-10-29T19:05:00). "
+        "Optional in UTC range mode.",
     )
     packet_query_parser.set_defaults(func=_packet_query_parser)
 
