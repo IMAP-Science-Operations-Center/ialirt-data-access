@@ -262,7 +262,7 @@ def main():
         type=str,
         required=False,
         help="Day of year of the packet (e.g., 148). "
-             "Required for individual params mode.",
+        "Required for individual params mode.",
     )
     packet_query_parser.add_argument(
         "--hh", type=str, required=False, help="Hour (0 to 23)."

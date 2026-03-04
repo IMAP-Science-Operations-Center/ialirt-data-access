@@ -101,14 +101,11 @@ def test_packet_query_utc_range(mock_urlopen: unittest.mock.MagicMock):
     mock_urlopen.assert_called_once()
     urlopen_call = mock_urlopen.mock_calls[0].args[0]
     called_url = urlopen_call.full_url
-    expected_url_encoded = (
-        "https://ialirt.test.com/ialirt-packet-query?"
-        + urlencode(
-            {
-                "time_utc_start": "2025-10-29T18:55:02",
-                "time_utc_end": "2025-10-29T19:05:00",
-            }
-        )
+    expected_url_encoded = "https://ialirt.test.com/ialirt-packet-query?" + urlencode(
+        {
+            "time_utc_start": "2025-10-29T18:55:02",
+            "time_utc_end": "2025-10-29T19:05:00",
+        }
     )
     assert called_url == expected_url_encoded
 
@@ -122,9 +119,8 @@ def test_packet_query_utc_start_only(mock_urlopen: unittest.mock.MagicMock):
     assert response == [filename]
 
     urlopen_call = mock_urlopen.mock_calls[0].args[0]
-    expected_url_encoded = (
-        "https://ialirt.test.com/ialirt-packet-query?"
-        + urlencode({"time_utc_start": "2025-10-29T18:55:02"})
+    expected_url_encoded = "https://ialirt.test.com/ialirt-packet-query?" + urlencode(
+        {"time_utc_start": "2025-10-29T18:55:02"}
     )
     assert urlopen_call.full_url == expected_url_encoded
 
