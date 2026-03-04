@@ -72,7 +72,6 @@ def _log_query_parser(args: argparse.Namespace):
     query_params = {k: v for k, v in query_params.items() if v is not None}
     try:
         query_results = ialirt_data_access.log_query(**query_params)
-        logger.info("Query results: %s", query_results)
         print(query_results)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         logger.error("An error occurred: %s", e)
@@ -105,7 +104,6 @@ def _packet_query_parser(args: argparse.Namespace):
     query_params = {k: v for k, v in query_params.items() if v is not None}
     try:
         query_results = ialirt_data_access.packet_query(**query_params)
-        logger.info("Query results: %s", query_results)
         print(query_results)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         logger.error("An error occurred: %s", e)
@@ -138,7 +136,6 @@ def _archive_query_parser(args: argparse.Namespace):
     query_params = {k: v for k, v in query_params.items() if v is not None}
     try:
         query_results = ialirt_data_access.archive_query(**query_params)
-        logger.info("Query results: %s", query_results)
         print(query_results)
     except ialirt_data_access.io.IALIRTDataAccessError as e:
         logger.error("An error occurred: %s", e)
