@@ -173,6 +173,38 @@ def test_archive_query_invalid_date_order(mock_urlopen: unittest.mock.MagicMock)
     assert mock_urlopen.call_count == 0
 
 
+def test_archive_query_since(mock_urlopen: unittest.mock.MagicMock):
+    """Test archive_query with the since parameter."""
+    filename = "imap_ialirt_l1_realtime_20240521_v001.cdf"
+    query_params = {"since": "20240521", "version": "1"}
+    _set_mock_data(mock_urlopen, json.dumps([filename]).encode("utf-8"))
+
+    response = ialirt_data_access.archive_query(since="20240521")
+    assert response == [filename]
+
+    mock_urlopen.assert_called_once()
+    urlopen_call = mock_urlopen.mock_calls[0].args[0]
+    called_url = urlopen_call.full_url
+    expected_url_encoded = (
+        f"https://ialirt.test.com/ialirt-archive-query?{urlencode(query_params)}"
+    )
+    assert called_url == expected_url_encoded
+
+
+def test_archive_query_since_with_date_parts(mock_urlopen: unittest.mock.MagicMock):
+    """Test that archive_query raises ValueError when since is combined with date."""
+    with pytest.raises(ValueError, match="since cannot be combined with"):
+        ialirt_data_access.archive_query(since="20240521", year="2024")
+
+    with pytest.raises(ValueError, match="since cannot be combined with"):
+        ialirt_data_access.archive_query(since="20240521", month="05")
+
+    with pytest.raises(ValueError, match="since cannot be combined with"):
+        ialirt_data_access.archive_query(since="20240521", day="21")
+
+    assert mock_urlopen.call_count == 0
+
+
 def test_data_product_query(mock_urlopen: unittest.mock.MagicMock):
     """Test a call to the data product query API with multiple query parameters."""
     query_params = {

@@ -57,10 +57,20 @@ Find all archive CDF files, optionally filtered by year, month, and day. All par
 $ ialirt-data-access --url <url> ialirt-archive-query [--year <year>] [--month <month>] [--day <day>] [--version <version>]
 ```
 
+Or use `--since` to get all files on or after a given date (format: YYYYMMDD). Cannot be combined with `--year`, `--month`, or `--day`.
+
+```bash
+$ ialirt-data-access --url <url> ialirt-archive-query --since <yyyymmdd> [--version <version>]
+```
+
 An equivalent curl command is shown.
 
 ```bash
 $ curl "https://ialirt.imap-mission.com/ialirt-archive-query?year=2024&month=05&day=21&version=1"
+```
+
+```bash
+$ curl "https://ialirt.imap-mission.com/ialirt-archive-query?since=20240521&version=1"
 ```
 
 ### Download from S3

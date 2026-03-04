@@ -233,6 +233,7 @@ def archive_query(
     month: Optional[str] = None,
     day: Optional[str] = None,
     version: Optional[str] = "1",
+    since: Optional[str] = None,
 ) -> list[str]:
     """Query the I-ALiRT archive CDF files by date.
 
@@ -246,6 +247,9 @@ def archive_query(
         Day of month, e.g., '21'. Requires month.
     version : str, optional
         File version number, defaults to '1'.
+    since : str, optional
+        Return files on or after this date. Format: YYYYMMDD (e.g. '20240521').
+        Cannot be combined with year, month, or day.
 
     Returns
     -------
@@ -255,12 +259,18 @@ def archive_query(
     Raises
     ------
     ValueError
-        If date parts are not specified in order (year, month, day).
+        If date parts are not specified in order (year, month, day), or if
+        since is combined with year, month, or day.
     """
-    if (day and not month) or (month and not year):
+    if since and (year or month or day):
+        raise ValueError("since cannot be combined with year, month, or day.")
+
+    if not since and ((day and not month) or (month and not year)):
         raise ValueError("Date parts must be specified in order: year, month, day.")
 
     query_params: dict = {}
+    if since is not None:
+        query_params["since"] = since
     if year is not None:
         query_params["year"] = year
     if month is not None:
