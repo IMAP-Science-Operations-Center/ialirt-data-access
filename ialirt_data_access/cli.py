@@ -185,7 +185,7 @@ def _data_product_query_parser(args: argparse.Namespace):
         print(f"Error: {e}")
 
 
-def main(): # noqa: PLR0913
+def main(): # noqa: PLR0915
     """Parse the command line arguments.
 
     Run the command line interface to the I-ALiRT Data Access API.
