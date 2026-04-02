@@ -235,7 +235,12 @@ def download(
         downloads_dir = Path.home() / "Downloads" / filetype
 
     url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
-    url += f"/api-key/ialirt-download/{filetype}/{filename}"
+
+    # logs and packets route through the API key authorizer; archive is public
+    if filetype in ("logs", "packets"):
+        url += f"/api-key/ialirt-download/{filetype}/{filename}"
+    else:
+        url += f"/ialirt-download/{filetype}/{filename}"
 
     downloads_dir.mkdir(parents=True, exist_ok=True)
     destination = downloads_dir / filename
