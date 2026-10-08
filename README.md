@@ -217,6 +217,10 @@ An equivalent curl command would be:
 $ curl -H "x-api-key: $IALIRT_API_KEY" "https://ialirt.imap-mission.com/api-key/space-weather?instrument=mag"
 ```
 
+## Release Notes
+
+For a history of algorithm changes, ground station coverage, and data access updates, see the [release notes.](https://github.com/IMAP-Science-Operations-Center/ialirt-data-access/tree/main/docs/release_notes.md)
+
 ## Troubleshooting
 
 For troubleshooting support, go to [this page.](https://github.com/IMAP-Science-Operations-Center/ialirt-data-access/tree/main/docs/troubleshooting.md)
