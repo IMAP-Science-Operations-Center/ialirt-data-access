@@ -23,6 +23,9 @@ Usage:
 
     ialirt-data-access --debug --url <url> space-weather
     --time_utc_start <time_utc_start> --time_utc_end <time_utc_end>
+
+    ialirt-data-access --debug --url <url> space-weather-ssr
+    --instrument mag --version v001 --time_utc_start <time_utc_start>
 """
 
 import argparse
@@ -176,6 +179,49 @@ def _data_product_query_parser(args: argparse.Namespace):
         downloads_dir.mkdir(parents=True, exist_ok=True)
         timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
         filename = f"imap_ialirt_l1_realtime_{timestamp}.json"
+        output_path = downloads_dir / filename
+
+        with output_path.open("w") as f:
+            json.dump(query_results, f, indent=2)
+        print(f"Saved query results to: {output_path}")
+    except Exception as e:
+        logger.error("An error occurred: %s", e)
+        print(f"Error: {e}")
+
+
+def _ssr_data_product_query_parser(args: argparse.Namespace):
+    """Query the I-ALiRT SSR DynamoDB.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed arguments.
+
+    Returns
+    -------
+    None
+    """
+    query_params = {
+        "instrument": args.instrument,
+        "version": args.version,
+        "time_utc_start": args.time_utc_start,
+        "time_utc_end": args.time_utc_end,
+    }
+    # Remove any keys with None values.
+    query_params = {k: v for k, v in query_params.items() if v is not None}
+    try:
+        query_results = ialirt_data_access.ssr_data_product_query(**query_params)
+        logger.info("Returned %d records", len(query_results["data"]))
+
+        downloads_dir = args.downloads_dir
+        if downloads_dir is None:
+            downloads_dir = Path.home() / "Downloads"
+        downloads_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+        # The version the server returned, which is its default if
+        # --version was not given.
+        version = query_results["meta"]["version"]
+        filename = f"imap_ialirt_l1_ssr_{timestamp}_{version}.json"
         output_path = downloads_dir / filename
 
         with output_path.open("w") as f:
@@ -388,6 +434,42 @@ def main():  # noqa: PLR0915
         "Default is the user's Downloads folder.",
     )
     db_query_parser.set_defaults(func=_data_product_query_parser)
+
+    # Query SSR DB command
+    ssr_query_parser = subparsers.add_parser("space-weather-ssr")
+    ssr_query_parser.add_argument(
+        "--instrument",
+        type=str,
+        required=False,
+        help="Instrument. Options include: hit, mag, codice_lo, codice_hi, "
+        "swapi, swe, spacecraft, spacecraft_status, mag_hk, spice, ancillary.",
+    )
+    ssr_query_parser.add_argument(
+        "--version",
+        type=str,
+        required=False,
+        help="Data version, e.g. v001. The server default is v001.",
+    )
+    ssr_query_parser.add_argument(
+        "--time_utc_start",
+        type=str,
+        required=False,
+        help="Start of UTC time range (e.g., 2026-09-01T05:30:00).",
+    )
+    ssr_query_parser.add_argument(
+        "--time_utc_end",
+        type=str,
+        required=False,
+        help="End of UTC time range (e.g., 2026-09-01T06:30:00).",
+    )
+    ssr_query_parser.add_argument(
+        "--downloads_dir",
+        type=Path,
+        required=False,
+        help="Directory to save the output file. Example: /path/to/downloads/dir. "
+        "Default is the user's Downloads folder.",
+    )
+    ssr_query_parser.set_defaults(func=_ssr_data_product_query_parser)
 
     # Parse the arguments and set the values
     args = parser.parse_args()
