@@ -164,6 +164,52 @@ an equivalent curl command would be
 $ curl "https://ialirt.imap-mission.com/space-weather?instrument=mag&time_utc_start=2025-11-22T05:30:00&time_utc_end=2025-11-22T08:30:00"
 ```
 
+### Query the SSR database
+
+SSR data products are processed from the full day of I-ALiRT packets,
+about a week after the data was taken. The query works like
+`space-weather`, with an optional `--version` (default `v001`).
+Valid --instrument values include:
+
+- hit
+- mag
+- codice_lo
+- codice_hi
+- swapi
+- swe
+- spacecraft (IMAP ephemeris state vectors)
+- spacecraft_status (requires an API key)
+- mag_hk (MAG housekeeping, requires a full scope API key)
+- spice (SPICE kernels used)
+- ancillary (ancillary files used)
+
+If omitted, the query returns science instruments. If no time range is
+given, the latest 1 hour of data for each instrument is returned.
+
+```bash
+$ ialirt-data-access --url <url> space-weather-ssr --instrument mag --time_utc_start <time_utc_start> --time_utc_end <time_utc_end>
+```
+
+or to query a specific version
+
+```bash
+$ ialirt-data-access --url <url> space-weather-ssr --instrument mag --version v002 --time_utc_start <time_utc_start>
+```
+
+Each data product has a `kernel_set_key`. To see the SPICE kernels or
+ancillary files used to make it, query `spice` or `ancillary` with the
+same version and both times set to that `kernel_set_key`:
+
+```bash
+$ ialirt-data-access --url <url> space-weather-ssr --instrument spice --time_utc_start <kernel_set_key> --time_utc_end <kernel_set_key>
+```
+
+an equivalent curl command would be
+
+```bash
+$ curl "https://ialirt.imap-mission.com/space-weather-ssr?instrument=mag&version=v001&time_utc_start=2026-09-01T05:30:00&time_utc_end=2026-09-01T06:30:00"
+```
+
 ## Importing as a package
 
 ```python
