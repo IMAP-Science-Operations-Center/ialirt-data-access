@@ -389,3 +389,66 @@ def data_product_query(
         items = json.loads(items)
 
     return items
+
+
+def ssr_data_product_query(
+    *,
+    instrument: Optional[str] = None,
+    version: Optional[str] = None,
+    time_utc_start: Optional[str] = None,
+    time_utc_end: Optional[str] = None,
+) -> dict:
+    """Query the SSR data product API endpoint.
+
+    SSR data products are processed from the full day of I-ALiRT packets,
+    about a week after the data was taken. For example, calling:
+
+        ssr_data_product_query(instrument="mag", time_utc_start="2026-09-01T05:30:00")
+
+    will send a GET request to:
+
+        https://ialirt.imap-mission.com/space-weather-ssr?instrument=mag&time_utc_start=2026-09-01T05:30:00
+
+    Each data product has a kernel_set_key. To see the SPICE kernels or
+    ancillary files used to make it, query instrument "spice" or "ancillary"
+    with time_utc_start and time_utc_end both set to that kernel_set_key.
+
+    Parameters
+    ----------
+    instrument : Optional[str]
+        Instrument to query. Options include:
+        "hit", "mag", "codice_lo", "codice_hi", "swapi", "swe",
+        "spacecraft", "spacecraft_status", "mag_hk", "spice", "ancillary".
+    version : Optional[str]
+        Data version, e.g. "v001". The server default is "v001".
+    time_utc_start : Optional[str]
+        Start of utc_time filter.
+    time_utc_end : Optional[str]
+        End of utc_time filter.
+
+    Returns
+    -------
+    dict
+        The "meta" and "data" returned by the SSR query endpoint.
+    """
+    query_params = {}
+    if instrument is not None:
+        query_params["instrument"] = instrument
+    if version is not None:
+        query_params["version"] = version
+    if time_utc_start is not None:
+        query_params["time_utc_start"] = time_utc_start
+    if time_utc_end is not None:
+        query_params["time_utc_end"] = time_utc_end
+
+    url = f"{ialirt_data_access.config['DATA_ACCESS_URL']}"
+    url += f"/space-weather-ssr?{urlencode(query_params)}"
+
+    logger.info("SSR query: GET %s", url)
+    request = urllib.request.Request(url, method="GET")
+    with _get_url_response(request) as response:
+        items = response.read().decode("utf-8")
+        logger.debug("SSR query response: %s", items)
+        items = json.loads(items)
+
+    return items
