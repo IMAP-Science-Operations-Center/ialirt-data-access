@@ -210,6 +210,19 @@ an equivalent curl command would be
 $ curl "https://ialirt.imap-mission.com/space-weather-ssr?instrument=mag&version=v001&time_utc_start=2026-09-01T05:30:00&time_utc_end=2026-09-01T06:30:00"
 ```
 
+### Timestamps in query results
+
+Records returned by `space-weather` and `space-weather-ssr` include
+several timestamps:
+
+- `<instrument>_epoch` (e.g. `mag_epoch`): the time the measurement was
+  taken onboard the spacecraft.
+- `ttj2000ns`: the `<instrument>_epoch` converted to nanoseconds since
+  the J2000 epoch (2000-01-01T12:00:00), on the Terrestrial Time (TT)
+  timescale.
+- `time_utc`: the UTC time the spacecraft created the packet. The
+  `--time_utc_start` and `--time_utc_end` arguments filter on this field.
+
 ## Importing as a package
 
 ```python

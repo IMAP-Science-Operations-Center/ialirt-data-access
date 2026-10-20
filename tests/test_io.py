@@ -243,6 +243,28 @@ def test_archive_query_since_with_date_parts(mock_urlopen: unittest.mock.MagicMo
     assert mock_urlopen.call_count == 0
 
 
+def test_ssr_data_product_query(mock_urlopen: unittest.mock.MagicMock):
+    """Test a call to the SSR data product query API."""
+    expected_response = {"meta": {"count": 0}, "data": []}
+    _set_mock_data(mock_urlopen, json.dumps(expected_response).encode("utf-8"))
+
+    response = ialirt_data_access.ssr_data_product_query(
+        instrument="mag", version="v001", time_utc_start="2026-09-01T05:30:00"
+    )
+
+    assert response == expected_response
+    urlopen_call = mock_urlopen.mock_calls[0].args[0]
+    expected_query = urlencode(
+        {
+            "instrument": "mag",
+            "version": "v001",
+            "time_utc_start": "2026-09-01T05:30:00",
+        }
+    )
+    expected_url = f"https://ialirt.test.com/space-weather-ssr?{expected_query}"
+    assert urlopen_call.full_url == expected_url
+
+
 def test_data_product_query(mock_urlopen: unittest.mock.MagicMock):
     """Test a call to the data product query API with multiple query parameters."""
     query_params = {
