@@ -12,6 +12,7 @@ from ialirt_data_access.io import (
     download,
     log_query,
     packet_query,
+    ssr_data_product_query,
 )
 
 __all__ = [
@@ -20,6 +21,7 @@ __all__ = [
     "download",
     "log_query",
     "packet_query",
+    "ssr_data_product_query",
 ]
 __version__ = "0.10.0"
 
