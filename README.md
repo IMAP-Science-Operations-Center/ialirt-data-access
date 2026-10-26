@@ -101,6 +101,30 @@ An equivalent curl command is shown.
 $ curl -L -O "https://ialirt.imap-mission.com/ialirt-download/archive/imap_ialirt_l1_realtime_<yyyymmdd>_v<NNN>.cdf"
 ```
 
+### Ground station pointing schedules
+
+A pointing schedule is generated each day for every I-ALiRT ground station, 30 days in advance. Each file covers one UTC day and lists IMAP's azimuth (deg), elevation (deg) and Doppler velocity (km/s) every 60 seconds. Rows with negative elevation are times when IMAP is below the horizon. Valid stations are: Formosa, Kiel, Korea, Manaus, SANSA.
+
+To list the available files for a station, give a start date (inclusive) and end date (exclusive), at most 30 days apart.
+
+```bash
+$ curl "https://ialirt.imap-mission.com/ialirt-catalog?start_date=<YYYY-MM-DD>&end_date=<YYYY-MM-DD>&station=<station>"
+```
+
+The response lists `file_names`, `dates_modified` and `download_urls`. Each download URL is valid for 15 minutes.
+
+To download a file directly:
+
+```bash
+$ curl -L -O "https://ialirt.imap-mission.com/ialirt-download/pointing_schedules/<station>/<YYYY-MM-DD>_<station>.txt"
+```
+
+For example:
+
+```bash
+$ curl -L -O "https://ialirt.imap-mission.com/ialirt-download/pointing_schedules/Korea/2026-11-25_Korea.txt"
+```
+
 ### Query the database
 
 Query the database for a given time. Examples shown below.
