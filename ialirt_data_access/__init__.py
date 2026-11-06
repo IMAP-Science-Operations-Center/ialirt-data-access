@@ -23,7 +23,7 @@ __all__ = [
     "packet_query",
     "ssr_data_product_query",
 ]
-__version__ = "0.10.0"
+__version__ = "0.11.0"
 
 
 config = {
